@@ -73,7 +73,7 @@ export default function Shelf({ books }) {
 
   return (
     <section className="section">
-      <h2>{info ? info.label : 'Shelf'}</h2>
+      <h2 className="shelf-heading">{info ? info.label : 'Shelf'}</h2>
       {rows.length > 0 ? (
         rows.map((row, i) => (
           <ShelfRow key={i} books={row} onOpen={(id) => navigate(`/books/${id}`)} />

@@ -75,9 +75,18 @@
    width plus .shelf's overflow-x below is just a safety net for
    anything narrower than that. */
 .shelf-row {
-  width: calc(6 * var(--tap-min) + 5 * 6px);
+  /* +16px: a real plank overhangs the books resting on it a little on
+     each side, rather than ending exactly flush with the last spine.
+     Still comfortably under the ~328px available on a 360px phone. */
+  width: calc(6 * var(--tap-min) + 5 * 6px + 16px);
   max-width: 100%;
   margin-inline: auto;
+}
+/* The Shelf page's heading ("Want to read", "Reading", ...) centered
+   to match the centered shelf below it, instead of the left-aligned
+   default components.css gives every h1/h2/h3. */
+.shelf-heading {
+  text-align: center;
 }
 /* components.css gives .shelf its own left/right padding (var(--space-2),
    16px each side) -- left over from when the plank spanned the full
@@ -90,6 +99,11 @@
 .shelf {
   padding-inline: 0;
   overflow-x: auto;
+  /* Centers the books within the now slightly-wider plank (16px more
+     than their exact combined width), so the overhang is even on both
+     sides instead of all dumped on the right (flex's default start
+     alignment). */
+  justify-content: center;
 }
 /* A visible, tinted scrollbar -- but ONLY on rows that actually need
    it (Shelf.jsx's ShelfRow measures scrollWidth vs clientWidth and
