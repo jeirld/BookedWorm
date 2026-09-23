@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Icon from '../components/Icon.jsx'
 import Button from '../components/Button.jsx'
 import { STATUSES } from '../utils/statuses.js'
+import logo from '../assets/logo.svg'
 
 // Field order matches the wireframe: username, date of creation,
 // biography (with its Edit button), then the app logo. Content sits in
@@ -50,7 +50,7 @@ export default function Account({ profile, setProfile, books }) {
           </>
         )}
 
-        <Icon name="book-open" label="Booked Worm logo" className="icon" />
+        <img src={logo} alt="Booked Worm logo" width="64" height="64" style={{ display: 'block' }} />
       </div>
 
       <div className="panel status-grid">
