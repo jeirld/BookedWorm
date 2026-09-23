@@ -11,10 +11,10 @@ export function getSpineColor(id) {
   return `var(--cloth-${CLOTHS[index]})`
 }
 
-// Keeps spines a readable range of heights (120-176px) while still varying
+// Keeps spines a readable range of heights (170-250px) while still varying
 // with the title, so longer titles tend to get slightly taller spines.
 export function getSpineHeight(title = '') {
-  const base = 120
-  const extra = (title.length * 3) % 56
+  const base = 170
+  const extra = (title.length * 3) % 80
   return `${base + extra}px`
 }

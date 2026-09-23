@@ -62,3 +62,21 @@
 .header__logo {
   flex: none;
 }
+
+/* Book spines on a shelf (see pages/Shelf.jsx). components.css fixes
+   .spine at a flat --tap-min (44px) wide, which looks sparse against
+   the full-width plank whenever a shelf has fewer than 5 books -- lots
+   of dead plank space to the right of the last spine. This makes each
+   spine flex-grow to fill the row (splitting the extra width evenly
+   across however many books are actually on that shelf), capped by
+   max-width so a lone book doesn't stretch absurdly wide.
+   The flex item is the <li> that wraps each BookSpine, not .spine
+   itself, so the grow/shrink/basis has to go there -- .spine just
+   fills whatever width its <li> ends up with. */
+.shelf > li {
+  flex: 1 1 72px;
+  max-width: 220px;
+}
+.spine {
+  width: 100%;
+}
