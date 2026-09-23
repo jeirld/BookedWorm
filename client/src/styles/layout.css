@@ -1,0 +1,18 @@
+/* ==========================================================================
+   Small layout additions on top of the design system's tokens.css and
+   components.css. Nothing here introduces a new colour or font --
+   components.css defines *between*-section spacing (.section + .section)
+   but not spacing between a section's own children, so several pages
+   (Book details, Add book, Account) had zero gap between elements
+   stacked directly inside one <section>. This adds that missing rhythm.
+   ========================================================================== */
+
+.section > * + * {
+  margin-top: var(--space-2);
+}
+
+/* Same rhythm inside a form-grid column (AddBook's two <div> columns),
+   where several FormFields were otherwise touching with no gap. */
+.col > * + * {
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,11 @@
+/* Pins BottomNav to the bottom of the viewport. components.css styles
+   the nav itself (background, grid, safe-area padding) but never
+   positions it, so without this it just sits wherever the page content
+   happens to end -- floating mid-screen on any page shorter than the
+   viewport. */
+.bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 20;
+}

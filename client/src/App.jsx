@@ -19,7 +19,10 @@ function Layout() {
   return (
     <>
       <Header title="Booked Worm" onBack={null} />
-      <main className="page">
+      {/* BottomNav is now fixed to the viewport (see BottomNav.module.css),
+          so main needs its own clearance at the bottom -- otherwise the
+          nav bar would sit on top of the last bit of content. */}
+      <main className="page" style={{ paddingBottom: 'calc(var(--nav-height) + var(--space-4) + env(safe-area-inset-bottom))' }}>
         <Outlet />
       </main>
       <BottomNav />

@@ -29,7 +29,7 @@ export default function AddBook({ addBook }) {
 
   return (
     <form className="section form-grid" onSubmit={handleSubmit}>
-      <div>
+      <div className="col">
         <h2>Add book</h2>
         <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
         <FormField label="Author" id="author" value={author} onChange={setAuthor} error={errors.author} />
@@ -40,7 +40,7 @@ export default function AddBook({ addBook }) {
           </Button>
         </div>
       </div>
-      <div>
+      <div className="col">
         <div className="field">
           <span className="field__label" id="rating-label">
             Rating (optional)

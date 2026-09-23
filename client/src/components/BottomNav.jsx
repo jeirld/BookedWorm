@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import Icon from './Icon.jsx'
+import styles from './BottomNav.module.css'
 
 // Organism. Props: active (kept for the design system's prop table;
 // NavLink already derives the active state from the current route).
@@ -11,7 +12,7 @@ const ITEMS = [
 
 export default function BottomNav() {
   return (
-    <nav className="nav" aria-label="Main">
+    <nav className={`nav ${styles.bar}`} aria-label="Main">
       {ITEMS.map((item) => (
         <NavLink
           key={item.to}
