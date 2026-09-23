@@ -44,15 +44,20 @@
     inset 0 1px 0 rgba(232, 218, 194, 0.05);
 }
 
-/* Header.jsx now puts the brand logo next to the title on every screen.
-   components.css centers .header__title with text-align, which still
-   works, but it's a block by default -- this makes it a flex row so the
-   logo and the text line up on one baseline instead of stacking. */
+/* Header.jsx puts the brand logo next to the title, as one centered
+   group. components.css centers .header__title with text-align, which
+   still works, but it's a block by default -- this makes it a flex row
+   so the logo and text sit on one line with real breathing room
+   between them (gap), instead of touching. */
 .header__title {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
+  gap: 15px;
+  font-size: 3rem; /* change this to resize just the header title --
+    kept modest here because 120px logo + 3.5rem text didn't fit on a
+    phone screen and got cut off. Nudge this up gradually and check the
+    live preview at each step. */
 }
 .header__logo {
   flex: none;

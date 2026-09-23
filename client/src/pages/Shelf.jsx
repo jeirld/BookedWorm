@@ -4,26 +4,43 @@ import AddButton from '../components/AddButton.jsx'
 import Icon from '../components/Icon.jsx'
 import { getStatus } from '../utils/statuses.js'
 
+// A real shelf only fits so many books side by side. Once a status has
+// more than this many, the rest spill onto a new shelf row (its own
+// <ul className="shelf"> + plank) underneath, instead of squeezing
+// everything onto one row.
+const SHELF_CAPACITY = 5
+
+function chunk(items, size) {
+  const rows = []
+  for (let i = 0; i < items.length; i += size) {
+    rows.push(items.slice(i, i + size))
+  }
+  return rows
+}
+
 export default function Shelf({ books }) {
   const { status } = useParams()
   const navigate = useNavigate()
   const info = getStatus(status)
   const shelfBooks = books.filter((book) => book.status === status)
+  const rows = chunk(shelfBooks, SHELF_CAPACITY)
 
   return (
     <section className="section">
       <h2>{info ? info.label : 'Shelf'}</h2>
-      {shelfBooks.length > 0 ? (
-        <>
-          <ul className="shelf">
-            {shelfBooks.map((book) => (
-              <li key={book.id}>
-                <BookSpine title={book.title} onClick={() => navigate(`/books/${book.id}`)} />
-              </li>
-            ))}
-          </ul>
-          <div className="shelf__plank" />
-        </>
+      {rows.length > 0 ? (
+        rows.map((row, i) => (
+          <div key={i}>
+            <ul className="shelf">
+              {row.map((book) => (
+                <li key={book.id}>
+                  <BookSpine title={book.title} onClick={() => navigate(`/books/${book.id}`)} />
+                </li>
+              ))}
+            </ul>
+            <div className="shelf__plank" />
+          </div>
+        ))
       ) : (
         <div className="panel">
           <Icon name={info?.icon ?? 'bookmark'} label="" className="icon" />
