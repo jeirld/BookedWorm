@@ -28,38 +28,40 @@ export default function AddBook({ addBook }) {
   }
 
   return (
-    <form className="section form-grid" onSubmit={handleSubmit}>
-      <div className="col">
-        <h2>Add book</h2>
-        <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
-        <FormField label="Author" id="author" value={author} onChange={setAuthor} error={errors.author} />
-        <StatusPicker value={status} onChange={setStatus} />
-        <div className="actions">
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            Cancel
-          </Button>
+    <section className="section">
+      <h2>Add book</h2>
+      <form className="panel form-grid" onSubmit={handleSubmit}>
+        <div className="col">
+          <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
+          <FormField label="Author" id="author" value={author} onChange={setAuthor} error={errors.author} />
+          <StatusPicker value={status} onChange={setStatus} />
+          <div className="actions">
+            <Button variant="secondary" onClick={() => navigate(-1)}>
+              Cancel
+            </Button>
+          </div>
         </div>
-      </div>
-      <div className="col">
-        <div className="field">
-          <span className="field__label" id="rating-label">
-            Rating (optional)
-          </span>
-          <StarRating value={rating} onChange={setRating} />
+        <div className="col">
+          <div className="field">
+            <span className="field__label" id="rating-label">
+              Rating (optional)
+            </span>
+            <StarRating value={rating} onChange={setRating} />
+          </div>
+          <FormField
+            label="Blurb (optional)"
+            id="blurb"
+            type="textarea"
+            value={blurb}
+            onChange={setBlurb}
+          />
+          <div className="actions">
+            <Button variant="primary" type="submit">
+              Add
+            </Button>
+          </div>
         </div>
-        <FormField
-          label="Blurb (optional)"
-          id="blurb"
-          type="textarea"
-          value={blurb}
-          onChange={setBlurb}
-        />
-        <div className="actions">
-          <Button variant="primary" type="submit">
-            Add
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </section>
   )
 }

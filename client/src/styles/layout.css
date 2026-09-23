@@ -7,12 +7,39 @@
    stacked directly inside one <section>. This adds that missing rhythm.
    ========================================================================== */
 
-.section > * + * {
-  margin-top: var(--space-2);
+.section > * + *,
+.panel > * + * {
+  margin-top: var(--space-3);
 }
 
 /* Same rhythm inside a form-grid column (AddBook's two <div> columns),
    where several FormFields were otherwise touching with no gap. */
 .col > * + * {
   margin-top: var(--space-2);
+}
+
+/* ---- Panel: a surface "card" wrapper for a page's main content --------
+   Book details, Add book, New note and Account used to sit as raw text
+   directly on the page background. Wrapping them in a panel gives every
+   screen the same physical, lifted-card feel Home and Notes already had
+   from StatusCard/NoteCard, instead of some screens floating on black
+   and others sitting on a surface. Colour is still --color-surface from
+   tokens.css; the shadow is tinted toward the page background instead of
+   a generic black drop shadow, and the inset line is a sliver of the
+   parchment text colour for a soft top highlight (not a new colour). */
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(232, 218, 194, 0.06);
+}
+
+/* NoteCard already uses --color-surface (components.css); this adds the
+   same tinted depth without changing anything components.css declares. */
+.note-card {
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(232, 218, 194, 0.05);
 }

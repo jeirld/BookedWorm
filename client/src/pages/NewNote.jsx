@@ -31,26 +31,28 @@ export default function NewNote({ books, addNote }) {
   }
 
   return (
-    <form className="section" onSubmit={handleSubmit}>
+    <section className="section">
       <h2>New note</h2>
-      <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
-      <FormField label="Note" id="body" type="textarea" value={body} onChange={setBody} />
-      <FormField
-        label="Book"
-        id="bookId"
-        value={bookId}
-        onChange={setBookId}
-        error={errors.bookId}
-        options={books.map((b) => ({ value: b.id, label: b.title }))}
-      />
-      <div className="actions">
-        <Button variant="secondary" onClick={() => navigate(-1)}>
-          Cancel
-        </Button>
-        <Button variant="primary" type="submit">
-          Save
-        </Button>
-      </div>
-    </form>
+      <form className="panel" onSubmit={handleSubmit}>
+        <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
+        <FormField label="Note" id="body" type="textarea" value={body} onChange={setBody} />
+        <FormField
+          label="Book"
+          id="bookId"
+          value={bookId}
+          onChange={setBookId}
+          error={errors.bookId}
+          options={books.map((b) => ({ value: b.id, label: b.title }))}
+        />
+        <div className="actions">
+          <Button variant="secondary" onClick={() => navigate(-1)}>
+            Cancel
+          </Button>
+          <Button variant="primary" type="submit">
+            Save
+          </Button>
+        </div>
+      </form>
+    </section>
   )
 }
