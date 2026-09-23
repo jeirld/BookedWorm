@@ -68,7 +68,7 @@
   --radius-full: 999px;    /* pills, add button */
 
   --tap-min:       44px;   /* minimum touch target */
-  --header-height: 64px;
+  --header-height: 88px;   /* bumped from 64px so the logo has room to be bigger */
   --nav-height:    64px;
 
   --shadow-lift: 0 4px 12px rgba(0, 0, 0, 0.5);
