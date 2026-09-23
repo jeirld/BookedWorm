@@ -64,21 +64,20 @@
 }
 
 /* Book spines on a shelf (see pages/Shelf.jsx) keep their original
-   fixed size (components.css: --tap-min wide, 120-176px tall). What
-   used to look sparse was the PLANK stretching to the full page width
-   even when a shelf only has 1-2 books on it. Instead of growing the
-   books to fill that space, shrink the row (and its plank) to fit
-   however many books are actually there.
-   `width: fit-content` on the wrapping .shelf-row (pages/Shelf.jsx)
-   makes the row only as wide as its books; .shelf__plank is a block
-   child, so it fills that shrunk width exactly, matching the row
-   above it instead of spanning the whole page. max-width plus
-   overflow-x is a safety net for a full 8-book row on a narrow phone,
-   where 8 books at full size may not all fit -- it scrolls sideways
-   within the shelf rather than overflowing the page. */
+   fixed size (components.css: --tap-min wide, 120-176px tall). A shelf
+   is a fixed physical object -- it doesn't get longer or shorter as
+   books are added or removed, it's just emptier or fuller. So instead
+   of sizing the plank to however many books happen to be on it right
+   now, this sizes it once, for the full 8-book capacity (matches
+   SHELF_CAPACITY in Shelf.jsx: 8 * --tap-min + 7 gaps of the 6px
+   components.css sets on .shelf), and centers it with margin-inline:
+   auto. max-width plus .shelf's overflow-x below is the fallback for
+   a narrow phone, where a full 8 books doesn't quite fit -- it
+   scrolls sideways within the shelf rather than overflowing the page. */
 .shelf-row {
-  width: fit-content;
+  width: calc(8 * var(--tap-min) + 7 * 6px);
   max-width: 100%;
+  margin-inline: auto;
 }
 .shelf {
   overflow-x: auto;
