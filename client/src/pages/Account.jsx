@@ -7,12 +7,15 @@ import logo from '../assets/logo.svg'
 // biography (with its Edit button), then the app logo. Content sits in
 // a `panel` (see layout.css) for the same lifted-card feel as the rest
 // of the app.
-export default function Account({ profile, setProfile, books }) {
+export default function Account({ profile, updateProfile, books }) {
   const [editing, setEditing] = useState(false)
   const [bio, setBio] = useState(profile.bio)
+  const [saving, setSaving] = useState(false)
 
-  function handleSave() {
-    setProfile((prev) => ({ ...prev, bio }))
+  async function handleSave() {
+    setSaving(true)
+    await updateProfile({ bio })
+    setSaving(false)
     setEditing(false)
   }
 
@@ -31,11 +34,11 @@ export default function Account({ profile, setProfile, books }) {
               aria-label="Biography"
             />
             <div className="actions">
-              <Button variant="secondary" onClick={() => setEditing(false)}>
+              <Button variant="secondary" onClick={() => setEditing(false)} disabled={saving}>
                 Cancel
               </Button>
-              <Button variant="primary" onClick={handleSave}>
-                Save
+              <Button variant="primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </>

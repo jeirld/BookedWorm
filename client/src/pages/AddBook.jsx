@@ -13,8 +13,9 @@ export default function AddBook({ addBook }) {
   const [status, setStatus] = useState('want-to-read')
   const [rating, setRating] = useState(0)
   const [errors, setErrors] = useState({})
+  const [saving, setSaving] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const nextErrors = {}
     if (!title.trim()) nextErrors.title = 'Title is required.'
@@ -22,7 +23,8 @@ export default function AddBook({ addBook }) {
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
 
-    addBook({ title, author, blurb, status, rating })
+    setSaving(true)
+    await addBook({ title, author, blurb, status, rating })
     // Goes to the shelf matching the chosen status, per CLAUDE.md.
     navigate(`/shelf/${status}`)
   }
@@ -36,7 +38,7 @@ export default function AddBook({ addBook }) {
           <FormField label="Author" id="author" value={author} onChange={setAuthor} error={errors.author} />
           <StatusPicker value={status} onChange={setStatus} />
           <div className="actions">
-            <Button variant="secondary" onClick={() => navigate(-1)}>
+            <Button variant="secondary" onClick={() => navigate(-1)} disabled={saving}>
               Cancel
             </Button>
           </div>
@@ -56,8 +58,8 @@ export default function AddBook({ addBook }) {
             onChange={setBlurb}
           />
           <div className="actions">
-            <Button variant="primary" type="submit">
-              Add
+            <Button variant="primary" type="submit" disabled={saving}>
+              {saving ? 'Adding...' : 'Add'}
             </Button>
           </div>
         </div>

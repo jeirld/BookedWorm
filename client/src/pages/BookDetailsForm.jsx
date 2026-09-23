@@ -16,9 +16,13 @@ export default function BookDetailsForm({ book, updateBook }) {
   const [status, setStatus] = useState(book.status)
   const [rating, setRating] = useState(book.rating)
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
-  function handleSave() {
-    updateBook(book.id, { status, rating })
+  async function handleSave() {
+    setSaving(true)
+    setSaved(false)
+    await updateBook(book.id, { status, rating })
+    setSaving(false)
     setSaved(true)
   }
 
@@ -31,8 +35,8 @@ export default function BookDetailsForm({ book, updateBook }) {
         <StatusPicker value={status} onChange={setStatus} />
         <p className="muted">{book.author}</p>
         <div className="actions">
-          <Button variant="primary" onClick={handleSave}>
-            Save
+          <Button variant="primary" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save'}
           </Button>
         </div>
         {saved && <p className="muted small">Saved.</p>}

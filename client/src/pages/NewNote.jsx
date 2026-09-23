@@ -12,8 +12,9 @@ export default function NewNote({ books, addNote }) {
   const [body, setBody] = useState('')
   const [bookId, setBookId] = useState(books[0]?.id ?? '')
   const [errors, setErrors] = useState({})
+  const [saving, setSaving] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const nextErrors = {}
     if (!title.trim()) nextErrors.title = 'Title is required.'
@@ -21,7 +22,8 @@ export default function NewNote({ books, addNote }) {
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
 
-    addNote({
+    setSaving(true)
+    await addNote({
       bookId: Number(bookId),
       title,
       body,
@@ -45,11 +47,11 @@ export default function NewNote({ books, addNote }) {
           options={books.map((b) => ({ value: b.id, label: b.title }))}
         />
         <div className="actions">
-          <Button variant="secondary" onClick={() => navigate(-1)}>
+          <Button variant="secondary" onClick={() => navigate(-1)} disabled={saving}>
             Cancel
           </Button>
-          <Button variant="primary" type="submit">
-            Save
+          <Button variant="primary" type="submit" disabled={saving}>
+            {saving ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </form>

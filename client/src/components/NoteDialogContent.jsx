@@ -14,9 +14,12 @@ export default function NoteDialogContent({ note, onSave, onClose }) {
   const [step, setStep] = useState('choice') // 'choice' | 'read' | 'edit'
   const [title, setTitle] = useState(note.title)
   const [body, setBody] = useState(note.body)
+  const [saving, setSaving] = useState(false)
 
-  function handleSave() {
-    onSave(note.id, { title, body })
+  async function handleSave() {
+    setSaving(true)
+    await onSave(note.id, { title, body })
+    setSaving(false)
     setStep('read')
   }
 
@@ -44,11 +47,11 @@ export default function NoteDialogContent({ note, onSave, onClose }) {
         <FormField label="Title" id="note-title" value={title} onChange={setTitle} />
         <FormField label="Note" id="note-body" type="textarea" value={body} onChange={setBody} />
         <div className="dialog__actions">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSave}>
-            Save
+          <Button variant="primary" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </>

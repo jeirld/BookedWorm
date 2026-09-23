@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route, Outlet, useLocation } from 'react-router-dom'
 import Header from './components/Header.jsx'
 import BottomNav from './components/BottomNav.jsx'
@@ -9,7 +9,7 @@ import AddBook from './pages/AddBook.jsx'
 import Notes from './pages/Notes.jsx'
 import NewNote from './pages/NewNote.jsx'
 import Account from './pages/Account.jsx'
-import { mockBooks, mockProfile } from './data/mockBooks.js'
+import * as api from './api/index.js'
 
 // The three tabs BottomNav links to. Header has no back button on
 // these (there's nowhere sensible to go "back" from a tab), but every
@@ -28,7 +28,7 @@ function Layout() {
   return (
     <>
       <Header title="Booked Worm" onBack={isRootScreen ? null : undefined} />
-      {/* BottomNav is now fixed to the viewport (see BottomNav.module.css),
+      {/* BottomNav is fixed to the viewport (see BottomNav.module.css),
           so main needs its own clearance at the bottom -- otherwise the
           nav bar would sit on top of the last bit of content. */}
       <main className="page" style={{ paddingBottom: 'calc(var(--nav-height) + var(--space-4) + env(safe-area-inset-bottom))' }}>
@@ -39,65 +39,103 @@ function Layout() {
   )
 }
 
+// Shown in place of the real routes while the first load is in flight
+// (src/api's mock implementation adds an artificial 250ms delay for
+// exactly this reason -- a real network is never instant, so this
+// screen has to exist rather than being discovered later against a
+// real API).
+function LoadingScreen() {
+  return (
+    <section className="section">
+      <div className="panel">
+        <p className="muted">Loading your shelf...</p>
+      </div>
+    </section>
+  )
+}
+
 export default function App() {
   // Both books and notes live here, at the top of the tree, and get
   // passed down as props. This is the fix for the proposal's one risk:
-  // updateBook always returns a NEW array (via .map), replacing only the
-  // matching book, so React sees the change and re-renders correctly no
-  // matter which screen (Book details' Save, or the star rating) called it.
-  const [books, setBooks] = useState(mockBooks)
-  const [notes, setNotes] = useState([])
-  const [profile, setProfile] = useState(mockProfile)
+  // updateBook always replaces the matching book with the server's
+  // response inside a NEW array (via .map), so React sees the change
+  // and re-renders correctly no matter which screen (Book details'
+  // Save, or the star rating) called it.
+  //
+  // null (not []) means "hasn't loaded yet" -- see LoadingScreen above.
+  const [books, setBooks] = useState(null)
+  const [notes, setNotes] = useState(null)
+  const [profile, setProfile] = useState(null)
 
-  function updateBook(id, changes) {
-    setBooks((prev) =>
-      prev.map((book) => (book.id === id ? { ...book, ...changes } : book)),
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([api.listBooks(), api.listNotes(), api.getProfile()]).then(
+      ([booksResult, notesResult, profileResult]) => {
+        if (cancelled) return
+        setBooks(booksResult)
+        setNotes(notesResult)
+        setProfile(profileResult)
+      },
     )
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function updateBook(id, changes) {
+    const updated = await api.updateBook(id, changes)
+    setBooks((prev) => prev.map((book) => (book.id === id ? updated : book)))
   }
 
-  function addBook(book) {
-    const id = books.length ? Math.max(...books.map((b) => b.id)) + 1 : 1
-    setBooks((prev) => [...prev, { id, rating: 0, notes: '', ...book }])
-    return id
+  async function addBook(book) {
+    const created = await api.createBook(book)
+    setBooks((prev) => [...prev, created])
+    return created.id
   }
 
-  function addNote(note) {
-    const id = notes.length ? Math.max(...notes.map((n) => n.id)) + 1 : 1
-    setNotes((prev) => [...prev, { id, ...note }])
-    return id
+  async function addNote(note) {
+    const created = await api.createNote(note)
+    setNotes((prev) => [...prev, created])
+    return created.id
   }
 
-  function updateNote(id, changes) {
-    setNotes((prev) =>
-      prev.map((note) => (note.id === id ? { ...note, ...changes } : note)),
-    )
+  async function updateNote(id, changes) {
+    const updated = await api.updateNote(id, changes)
+    setNotes((prev) => prev.map((note) => (note.id === id ? updated : note)))
   }
+
+  async function updateProfile(changes) {
+    const updated = await api.updateProfile(changes)
+    setProfile(updated)
+  }
+
+  const loading = books === null || notes === null || profile === null
 
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Home books={books} />} />
-        <Route path="/shelf/:status" element={<Shelf books={books} />} />
-        <Route
-          path="/books/new"
-          element={<AddBook addBook={addBook} />}
-        />
-        <Route
-          path="/books/:id"
-          element={<BookDetails books={books} updateBook={updateBook} />}
-        />
-        <Route
-          path="/notes"
-          element={<Notes notes={notes} books={books} updateNote={updateNote} />}
-        />
-        <Route
-          path="/notes/new"
-          element={<NewNote books={books} addNote={addNote} />}
-        />
-        <Route
-          path="/account"
-          element={<Account profile={profile} setProfile={setProfile} books={books} />}
-        />
+        {loading ? (
+          <Route path="*" element={<LoadingScreen />} />
+        ) : (
+          <>
+            <Route path="/" element={<Home books={books} />} />
+            <Route path="/shelf/:status" element={<Shelf books={books} />} />
+            <Route path="/books/new" element={<AddBook addBook={addBook} />} />
+            <Route
+              path="/books/:id"
+              element={<BookDetails books={books} updateBook={updateBook} />}
+            />
+            <Route
+              path="/notes"
+              element={<Notes notes={notes} books={books} updateNote={updateNote} />}
+            />
+            <Route path="/notes/new" element={<NewNote books={books} addNote={addNote} />} />
+            <Route
+              path="/account"
+              element={<Account profile={profile} updateProfile={updateProfile} books={books} />}
+            />
+          </>
+        )}
       </Route>
     </Routes>
   )
