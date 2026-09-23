@@ -1,0 +1,257 @@
+/* ==========================================================================
+   Booked Worm - components (plain CSS starter)
+   Needs tokens.css first. Split each block into its own CSS Module
+   (Button.module.css, Header.module.css ...) when you build in React.
+   ========================================================================== */
+
+/* ---- Base -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: var(--weight-regular) var(--font-size-md) / var(--line-height-md) var(--font-body);
+  caret-color: var(--color-primary);
+  accent-color: var(--color-primary);
+}
+
+::selection { background: var(--color-primary); color: var(--color-bg); }
+
+h1, h2, h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-lg);
+  text-wrap: balance;
+}
+
+p { margin: 0; max-width: 68ch; }
+
+small, .small { font-size: var(--font-size-sm); line-height: var(--line-height-sm); }
+.muted { color: var(--color-text-muted); }
+
+a { color: var(--color-primary); text-underline-offset: 0.2em; }
+
+:focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
+
+svg.icon {
+  width: 24px; height: 24px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.75;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---- Layout ------------------------------------------------------------ */
+.page {
+  max-width: 960px;
+  margin-inline: auto;
+  padding: var(--space-3) var(--gutter) var(--space-6);
+}
+.section + .section { margin-top: var(--space-4); }
+.section > h2 { margin-bottom: var(--space-2); }
+
+.status-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.form-grid   { display: grid; gap: var(--space-3); }
+.note-list   { display: grid; gap: var(--space-2); }
+.actions     { display: flex; gap: var(--space-2); justify-content: space-between; }
+
+/* ---- Button (atom) ----------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1);
+  min-height: 48px; padding: 0 var(--space-3);
+  border: 1.5px solid transparent; border-radius: var(--radius-md);
+  font: var(--weight-semibold) var(--font-size-md) / 1 var(--font-body);
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out, transform 0.15s ease-out;
+}
+.btn:active { transform: translateY(1px); }
+.btn--primary   { background: var(--color-primary); color: var(--color-bg); }
+.btn--primary:hover { background: color-mix(in srgb, var(--color-primary) 84%, var(--color-text)); }
+.btn--secondary { background: transparent; color: var(--color-text); border-color: var(--color-border); }
+.btn--secondary:hover { border-color: var(--color-text); }
+.btn--ghost     { background: transparent; color: var(--color-primary); padding: 0 var(--space-2); }
+.btn--ghost:hover { background: color-mix(in srgb, var(--color-primary) 14%, transparent); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.icon-btn {
+  display: grid; place-items: center; width: var(--tap-min); height: var(--tap-min);
+  border: 0; border-radius: var(--radius-full); background: transparent;
+  color: var(--color-primary); cursor: pointer;
+}
+.icon-btn:hover { background: color-mix(in srgb, var(--color-primary) 14%, transparent); }
+
+/* ---- AddButton (atom): the one accent call-to-action ------------------- */
+.add-btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-height: 56px; padding: 0 var(--space-3) 0 var(--space-2);
+  border: 0; border-radius: var(--radius-full);
+  background: var(--color-accent); color: var(--color-text);
+  font: var(--weight-semibold) var(--font-size-md) / 1 var(--font-body);
+  box-shadow: var(--shadow-lift); cursor: pointer;
+  transition: background-color 0.15s ease-out, transform 0.15s ease-out;
+}
+.add-btn:hover { background: color-mix(in srgb, var(--color-accent) 82%, var(--color-bg)); }
+.add-btn:active { transform: translateY(1px); }
+
+/* ---- StatusTag (atom): icon + words, never colour alone ---------------- */
+.tag {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-height: 32px; padding: 0 var(--space-2) 0 var(--space-1);
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-full);
+  background: transparent; color: var(--color-text);
+  font: var(--weight-semibold) var(--font-size-sm) / 1 var(--font-body);
+}
+.tag svg.icon { width: 18px; height: 18px; }
+button.tag { min-height: var(--tap-min); cursor: pointer; transition: background-color 0.15s ease-out, border-color 0.15s ease-out; }
+button.tag:hover { border-color: var(--color-text); }
+.tag[aria-checked="true"] { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-bg); }
+.tag-group { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+
+/* ---- StarRating (atom) -------------------------------------------------- */
+.stars { display: inline-flex; gap: var(--space-half); }
+.star { display: grid; place-items: center; color: var(--color-border); }
+.star svg.icon { width: 24px; height: 24px; }
+.star.on { color: var(--color-primary); }
+.star.on svg.icon { fill: currentColor; }
+button.star { width: var(--tap-min); height: var(--tap-min); padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; cursor: pointer; }
+button.star:hover { color: var(--color-primary); }
+.stars--input { gap: 0; }
+
+/* ---- FormField (molecule) ----------------------------------------------- */
+.field { display: grid; gap: var(--space-1); }
+.field__label { font: var(--weight-semibold) var(--font-size-sm) / var(--line-height-sm) var(--font-body); }
+.input {
+  width: 100%; min-height: 48px; padding: 0 var(--space-2);
+  background: var(--color-bg); color: var(--color-text);
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+  font: inherit;
+}
+.input::placeholder { color: var(--color-text-muted); opacity: 1; }
+.input:hover { border-color: var(--color-text-muted); }
+.input:focus-visible { outline: var(--focus-ring); outline-offset: 2px; border-color: var(--color-primary); }
+.input[aria-invalid="true"] { border-color: var(--color-accent); }
+textarea.input { min-height: 136px; padding: var(--space-2); resize: vertical; }
+select.input {
+  appearance: none; padding-right: var(--space-5);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23BCAA93' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right var(--space-2) center; background-size: 20px;
+}
+.field__error { display: flex; align-items: center; gap: var(--space-1); color: var(--color-text); font-size: var(--font-size-sm); line-height: var(--line-height-sm); }
+.field__error svg.icon { width: 18px; height: 18px; color: var(--color-accent); }
+
+/* ---- Header (organism) --------------------------------------------------- */
+.header {
+  display: grid; grid-template-columns: var(--tap-min) 1fr var(--tap-min); align-items: center;
+  min-height: var(--header-height); padding: 0 var(--space-1);
+  background: var(--color-bg);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 45%, transparent);
+}
+.header__title { grid-column: 2; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header .icon-btn { grid-column: 1; grid-row: 1; }
+
+/* ---- BottomNav (organism) ------------------------------------------------ */
+.nav {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--color-surface);
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 45%, transparent);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav__item {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-half); min-height: var(--nav-height);
+  color: var(--color-text-muted); text-decoration: none;
+  font: var(--weight-semibold) var(--font-size-sm) / 1 var(--font-body);
+}
+.nav__item:hover { color: var(--color-text); }
+.nav__item[aria-current="page"] { color: var(--color-primary); }
+.nav__item[aria-current="page"]::before {
+  content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 3px;
+  border-radius: 0 0 3px 3px; background: var(--color-primary);
+}
+
+/* ---- Cover: generated from the title, no image upload needed ------------- */
+.cover {
+  position: relative; aspect-ratio: 2 / 3; border-radius: 4px 8px 8px 4px;
+  background: var(--cover-bg, var(--color-primary)); color: var(--cover-fg, var(--color-bg));
+  box-shadow: inset 6px 0 6px -4px rgba(0, 0, 0, 0.35), inset 0 0 0 1px color-mix(in srgb, var(--color-text) 16%, transparent), 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+.cover::after {
+  content: ""; position: absolute; left: 22%; right: 16%; top: 30%; height: 3px; border-radius: 2px;
+  background: currentColor; opacity: 0.55; box-shadow: 0 8px 0 currentColor;
+}
+
+/* ---- StatusCard (molecule): Home, repeated per status -------------------- */
+.status-card {
+  display: grid; grid-template-rows: 1fr auto; overflow: hidden;
+  background: var(--color-surface); border: 1px solid transparent; border-radius: var(--radius-md);
+  color: var(--color-text); text-decoration: none;
+  transition: border-color 0.15s ease-out, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.status-card:hover { border-color: var(--color-border); transform: translateY(-2px); }
+.status-card__covers { display: flex; justify-content: center; align-items: flex-end; height: 112px; padding-top: var(--space-2); overflow: hidden; }
+.status-card__covers .cover { width: 52px; margin-inline: -5px; transform-origin: 50% 100%; }
+.status-card__covers .cover:nth-child(1) { transform: rotate(-7deg); }
+.status-card__covers .cover:nth-child(2) { width: 60px; z-index: 1; height: 90px; aspect-ratio: auto; }
+.status-card__covers .cover:nth-child(3) { transform: rotate(7deg); }
+.status-card__tab {
+  display: flex; align-items: center; gap: var(--space-1);
+  min-height: 64px; padding: var(--space-1) 12px;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+}
+.status-card__tab svg.icon { color: var(--color-primary); }
+.status-card__text { display: grid; gap: 2px; min-width: 0; }
+.status-card__name { font: var(--weight-semibold) var(--font-size-md) / 1.2 var(--font-body); }
+.status-card__count { color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.2; }
+
+/* ---- BookSpine (molecule): Shelf, one per book --------------------------- */
+.shelf { display: flex; align-items: flex-end; gap: 6px; padding: 0 var(--space-2); margin: 0; list-style: none; }
+.shelf__plank { height: 10px; border-radius: 0 0 4px 4px; background: color-mix(in srgb, var(--color-text) 16%, var(--color-surface)); }
+.spine {
+  width: var(--tap-min); height: var(--h, 160px); padding: var(--space-2) 0;
+  border: 0; border-radius: 4px 4px 0 0;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-text) 16%, transparent);
+  background: var(--spine-bg, var(--color-primary)); color: var(--spine-fg, var(--color-bg));
+  font: var(--weight-bold) var(--font-size-sm) / 1 var(--font-heading);
+  writing-mode: vertical-rl; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.spine:hover, .spine:focus-visible { transform: translateY(-8px); }
+
+/* ---- NoteCard (molecule): Notes, one per note ----------------------------- */
+.note-card {
+  display: grid; gap: var(--space-1); width: 100%; padding: var(--space-2);
+  background: var(--color-surface); border: 1px solid transparent; border-radius: var(--radius-md);
+  color: var(--color-text); text-align: left; font: inherit; cursor: pointer;
+  transition: border-color 0.15s ease-out;
+}
+.note-card:hover { border-color: var(--color-border); }
+.note-card__title { font-weight: var(--weight-semibold); }
+.note-card__excerpt {
+  color: var(--color-text-muted);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.note-card__meta { display: flex; align-items: center; gap: var(--space-1); color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.note-card__meta svg.icon { width: 16px; height: 16px; }
+
+/* ---- NoteDialog (organism): Notes pop-up, uses native <dialog> ------------ */
+.dialog {
+  width: min(420px, calc(100vw - 2 * var(--gutter))); padding: var(--space-3);
+  background: var(--color-surface); color: var(--color-text);
+  border: 0; border-radius: var(--radius-md); box-shadow: var(--shadow-lift);
+}
+.dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
+.dialog__actions { display: flex; gap: var(--space-2); justify-content: flex-end; margin-top: var(--space-3); }
+
+/* ---- Desktop: 768px and up ------------------------------------------------ */
+@media (min-width: 768px) {
+/* @wide-start */
+.page { padding-top: var(--space-4); }
+.status-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); }
+.form-grid   { grid-template-columns: 1fr 1fr; column-gap: var(--space-4); align-items: start; }
+.note-list   { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.nav         { grid-template-columns: repeat(3, minmax(0, 200px)); justify-content: center; }
+.actions     { justify-content: flex-end; }
+/* @wide-end */
+}

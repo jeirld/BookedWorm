@@ -1,0 +1,81 @@
+/* ==========================================================================
+   Booked Worm - design tokens (plain CSS)
+   Dark academia, dark only. Built from the Dark Academia reference palette:
+   Ink Black, Walnut Leather, Dusty Oat and Burnt Umber, plus a parchment text
+   colour lightened from Dusty Oat.
+
+   Fonts (add to index.html <head>):
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Literata:wght@700&display=swap" rel="stylesheet">
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ---- Colour: 5 core tokens ------------------------------------------- */
+  --color-bg:      #0D0D0D; /* page background: Ink Black                      */
+  --color-surface: #4B2E19; /* cards, nav bar, pop-up: Walnut Leather          */
+  --color-text:    #E8DAC2; /* body text, headings: Parchment (Dusty Oat, lightened) */
+  --color-primary: #B49A83; /* links, buttons, active states, stars: Dusty Oat */
+  --color-accent:  #934D33; /* the one call-to-action, error icon: Burnt Umber, lifted */
+
+  /* ---- Colour: 2 derived from the five above ---------------------------- */
+  --color-text-muted: #BCAA93; /* text mixed 72% into surface: captions, hints */
+  --color-border:     #9A846E; /* text mixed 50% into surface: input outlines  */
+
+  /* ---- Book cloth: illustration only ------------------------------------
+     Used for generated book covers and spines. Never for text or controls.
+     Dusty Oat (--color-primary) is the seventh cloth. */
+  --cloth-blue:   #2C3E50; /* Twilight Blue */
+  --cloth-umber:  #7E3E28; /* Burnt Umber   */
+  --cloth-ash:    #A49C92; /* Ash Grey      */
+  --cloth-plum:   #5A3D55; /* Dusty Plum    */
+  --cloth-olive:  #5E6253; /* Olive Smoke   */
+  --cloth-bronze: #5B4636; /* Aged Bronze   */
+  --cloth-primary: var(--color-primary); /* Dusty Oat, the seventh cloth */
+
+  /* ---- Type ------------------------------------------------------------- */
+  --font-heading: "Literata", Georgia, "Times New Roman", serif;
+  --font-body:    "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --font-size-lg: 1.75rem;   /* 28px  Heading */
+  --font-size-md: 1rem;      /* 16px  Body    */
+  --font-size-sm: 0.875rem;  /* 14px  Small   */
+
+  --line-height-lg: 1.2;
+  --line-height-md: 1.5;
+  --line-height-sm: 1.4;
+
+  --weight-regular:  400;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ---- Spacing: 8px base unit ------------------------------------------- */
+  --space-half: 4px;   /* icon-to-label gaps only */
+  --space-1:  8px;     /* tight: between related items            */
+  --space-2:  16px;    /* comfortable: inside cards, list gaps    */
+  --space-3:  24px;    /* between groups                          */
+  --space-4:  32px;    /* standard: between sections              */
+  --space-5:  48px;
+  --space-6:  64px;
+
+  --gutter: var(--space-2);  /* screen edge padding: 16px phone, 32px desktop */
+
+  /* ---- Shape, size, depth ----------------------------------------------- */
+  --radius-sm:   8px;      /* inputs, tags */
+  --radius-md:   12px;     /* cards, buttons, dialog */
+  --radius-full: 999px;    /* pills, add button */
+
+  --tap-min:       44px;   /* minimum touch target */
+  --header-height: 64px;
+  --nav-height:    64px;
+
+  --shadow-lift: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --focus-ring:  3px solid var(--color-text);
+}
+
+/* Desktop: 768px and up */
+@media (min-width: 768px) {
+  :root { --gutter: var(--space-4); }
+}
