@@ -1,13 +1,18 @@
 /* StatusCard, list layout (matches the wireframe: one row per status,
    a book cover on the left and the status name + count on the right).
    Not in components.css since the wireframe's row layout replaced the
-   design system step's grid-of-cards version -- see CLAUDE.md. */
+   design system step's grid-of-cards version -- see CLAUDE.md.
+
+   Sized to actually fill the Home screen (four rows, generous height)
+   instead of a thin compact list with dead space below it. Depth comes
+   from a second, tinted cover peeking out behind the front one -- using
+   the design system's own cloth colours, not a generic border/shadow. */
 .row {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  min-height: 72px;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  min-height: 132px;
   background: var(--color-surface);
   border: 1px solid transparent;
   border-radius: var(--radius-md);
@@ -19,22 +24,54 @@
   border-color: var(--color-border);
   transform: translateX(2px);
 }
-.row .cover {
-  width: 44px;
-  flex: none;
+.row:active {
+  transform: translateX(2px) scale(0.99);
 }
+
+.covers {
+  position: relative;
+  flex: none;
+  width: 84px;
+  height: 104px;
+}
+.covers :global(.cover) {
+  position: absolute;
+  width: 62px;
+  top: 4px;
+}
+.coverBack {
+  right: 0;
+  transform: rotate(6deg);
+  opacity: 0.85;
+}
+.coverFront {
+  left: 0;
+  top: 0;
+}
+
 .text {
   display: grid;
-  gap: 2px;
+  gap: var(--space-half);
   min-width: 0;
+  flex: 1;
 }
 .name {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  font: var(--weight-semibold) var(--font-size-md) / 1.2 var(--font-body);
+  font: var(--weight-bold) var(--font-size-md) / 1.2 var(--font-body);
+}
+.name svg:global(.icon) {
+  width: 22px;
+  height: 22px;
+  color: var(--color-primary);
 }
 .count {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.chevron {
+  flex: none;
+  color: var(--color-text-muted);
 }
