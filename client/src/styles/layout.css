@@ -97,13 +97,15 @@
    this file overrides an existing components.css declaration instead
    of only adding new ones -- everything else in this file is additive. */
 .shelf {
-  padding-inline: 0;
+  /* 8px each side instead of components.css's 16px -- matches the
+     shelf-row's +16px overhang above exactly, so a FULL row of 6 books
+     sits flush against this padding on both sides (true overhang).
+     A row with fewer books just starts at the left padding and leaves
+     natural empty shelf space after it, the way a partly-filled shelf
+     actually looks -- not centered in the middle of a mostly-empty
+     plank, which is what `justify-content: center` did here before. */
+  padding-inline: 8px;
   overflow-x: auto;
-  /* Centers the books within the now slightly-wider plank (16px more
-     than their exact combined width), so the overhang is even on both
-     sides instead of all dumped on the right (flex's default start
-     alignment). */
-  justify-content: center;
 }
 /* A visible, tinted scrollbar -- but ONLY on rows that actually need
    it (Shelf.jsx's ShelfRow measures scrollWidth vs clientWidth and
