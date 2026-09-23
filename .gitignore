@@ -20,6 +20,3 @@ backup*.sql
 # Logs
 *.log
 npm-debug.log*
-
-# Working notes for Claude Code, not part of the graded project
-CLAUDE.md
