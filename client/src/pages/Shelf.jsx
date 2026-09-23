@@ -8,7 +8,7 @@ import { getStatus } from '../utils/statuses.js'
 // more than this many, the rest spill onto a new shelf row (its own
 // <ul className="shelf"> + plank) underneath, instead of squeezing
 // everything onto one row.
-const SHELF_CAPACITY = 5
+const SHELF_CAPACITY = 8
 
 function chunk(items, size) {
   const rows = []
@@ -30,7 +30,7 @@ export default function Shelf({ books }) {
       <h2>{info ? info.label : 'Shelf'}</h2>
       {rows.length > 0 ? (
         rows.map((row, i) => (
-          <div key={i}>
+          <div key={i} className="shelf-row">
             <ul className="shelf">
               {row.map((book) => (
                 <li key={book.id}>

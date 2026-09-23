@@ -63,20 +63,37 @@
   flex: none;
 }
 
-/* Book spines on a shelf (see pages/Shelf.jsx). components.css fixes
-   .spine at a flat --tap-min (44px) wide, which looks sparse against
-   the full-width plank whenever a shelf has fewer than 5 books -- lots
-   of dead plank space to the right of the last spine. This makes each
-   spine flex-grow to fill the row (splitting the extra width evenly
-   across however many books are actually on that shelf), capped by
-   max-width so a lone book doesn't stretch absurdly wide.
-   The flex item is the <li> that wraps each BookSpine, not .spine
-   itself, so the grow/shrink/basis has to go there -- .spine just
-   fills whatever width its <li> ends up with. */
-.shelf > li {
-  flex: 1 1 72px;
-  max-width: 220px;
+/* Book spines on a shelf (see pages/Shelf.jsx) keep their original
+   fixed size (components.css: --tap-min wide, 120-176px tall). What
+   used to look sparse was the PLANK stretching to the full page width
+   even when a shelf only has 1-2 books on it. Instead of growing the
+   books to fill that space, shrink the row (and its plank) to fit
+   however many books are actually there.
+   `width: fit-content` on the wrapping .shelf-row (pages/Shelf.jsx)
+   makes the row only as wide as its books; .shelf__plank is a block
+   child, so it fills that shrunk width exactly, matching the row
+   above it instead of spanning the whole page. max-width plus
+   overflow-x is a safety net for a full 8-book row on a narrow phone,
+   where 8 books at full size may not all fit -- it scrolls sideways
+   within the shelf rather than overflowing the page. */
+.shelf-row {
+  width: fit-content;
+  max-width: 100%;
 }
-.spine {
-  width: 100%;
+.shelf {
+  overflow-x: auto;
+  /* A visible scrollbar, not just a silent overflow -- otherwise a
+     shelf that doesn't quite fit (e.g. 8 full-size books on a narrow
+     phone) clips its last book(s) off-screen with no hint you can
+     scroll to see them. Colours reuse tokens.css, no new ones. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+  padding-bottom: var(--space-2); /* room for the scrollbar so it doesn't sit on the spines */
+}
+.shelf::-webkit-scrollbar {
+  height: 8px;
+}
+.shelf::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
 }

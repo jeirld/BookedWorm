@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, useLocation } from 'react-router-dom'
 import Header from './components/Header.jsx'
 import BottomNav from './components/BottomNav.jsx'
 import Home from './pages/Home.jsx'
@@ -11,14 +11,23 @@ import NewNote from './pages/NewNote.jsx'
 import Account from './pages/Account.jsx'
 import { mockBooks, mockProfile } from './data/mockBooks.js'
 
+// The three tabs BottomNav links to. Header has no back button on
+// these (there's nowhere sensible to go "back" from a tab), but every
+// other screen (Shelf, Book details, Add book, New note) is reached by
+// drilling in from one of these, so it gets one.
+const ROOT_ROUTES = ['/', '/notes', '/account']
+
 // Shared layout: Header, then the page (<Outlet>), then BottomNav.
 // Each page tells the layout its title via the route's `handle`, but for
 // Increment 1 we keep it simple and let each page render its own <h1>
 // inside <main>; Header stays generic here.
 function Layout() {
+  const location = useLocation()
+  const isRootScreen = ROOT_ROUTES.includes(location.pathname)
+
   return (
     <>
-      <Header title="Booked Worm" onBack={null} />
+      <Header title="Booked Worm" onBack={isRootScreen ? null : undefined} />
       {/* BottomNav is now fixed to the viewport (see BottomNav.module.css),
           so main needs its own clearance at the bottom -- otherwise the
           nav bar would sit on top of the last bit of content. */}
