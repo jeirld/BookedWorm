@@ -7,6 +7,9 @@ import Button from '../components/Button.jsx'
 // form fields are local state, seeded once from `book` when this component
 // mounts. BookDetails.jsx remounts it (via `key`) whenever a different
 // book is opened, so the fields always start from the right values.
+//
+// Field order matches the wireframe: title, star rating, blurb, status,
+// then author last.
 export default function BookDetailsForm({ book, updateBook }) {
   const [status, setStatus] = useState(book.status)
   const [rating, setRating] = useState(book.rating)
@@ -20,10 +23,10 @@ export default function BookDetailsForm({ book, updateBook }) {
   return (
     <section className="section">
       <h2>{book.title}</h2>
-      <p className="muted">{book.author}</p>
       <StarRating value={rating} onChange={setRating} />
       <p>{book.blurb}</p>
       <StatusPicker value={status} onChange={setStatus} />
+      <p className="muted">{book.author}</p>
       <div className="actions">
         <Button variant="primary" onClick={handleSave}>
           Save

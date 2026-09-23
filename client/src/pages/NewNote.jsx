@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import FormField from '../components/FormField.jsx'
 import Button from '../components/Button.jsx'
 
+// Single column, and Title -> Note text -> Book, per the wireframe
+// (both the mobile and desktop New note sketches use one column, not the
+// two-column split Add book uses).
 export default function NewNote({ books, addNote }) {
   const navigate = useNavigate()
-  const [bookId, setBookId] = useState(books[0]?.id ?? '')
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
+  const [bookId, setBookId] = useState(books[0]?.id ?? '')
   const [errors, setErrors] = useState({})
 
   function handleSubmit(e) {
@@ -28,26 +31,25 @@ export default function NewNote({ books, addNote }) {
   }
 
   return (
-    <form className="section form-grid" onSubmit={handleSubmit}>
-      <div>
-        <h2>New note</h2>
-        <FormField
-          label="Book"
-          id="bookId"
-          value={bookId}
-          onChange={setBookId}
-          error={errors.bookId}
-          options={books.map((b) => ({ value: b.id, label: b.title }))}
-        />
-        <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
-      </div>
-      <div>
-        <FormField label="Note" id="body" type="textarea" value={body} onChange={setBody} />
-        <div className="actions">
-          <Button variant="primary" type="submit">
-            Save
-          </Button>
-        </div>
+    <form className="section" onSubmit={handleSubmit}>
+      <h2>New note</h2>
+      <FormField label="Title" id="title" value={title} onChange={setTitle} error={errors.title} />
+      <FormField label="Note" id="body" type="textarea" value={body} onChange={setBody} />
+      <FormField
+        label="Book"
+        id="bookId"
+        value={bookId}
+        onChange={setBookId}
+        error={errors.bookId}
+        options={books.map((b) => ({ value: b.id, label: b.title }))}
+      />
+      <div className="actions">
+        <Button variant="secondary" onClick={() => navigate(-1)}>
+          Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
       </div>
     </form>
   )

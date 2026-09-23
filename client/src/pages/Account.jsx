@@ -3,6 +3,8 @@ import Icon from '../components/Icon.jsx'
 import Button from '../components/Button.jsx'
 import { STATUSES } from '../utils/statuses.js'
 
+// Field order matches the wireframe: username, date of creation,
+// biography (with its Edit button), then the app logo.
 export default function Account({ profile, setProfile, books }) {
   const [editing, setEditing] = useState(false)
   const [bio, setBio] = useState(profile.bio)
@@ -14,7 +16,6 @@ export default function Account({ profile, setProfile, books }) {
 
   return (
     <section className="section">
-      <Icon name="user" label={`${profile.username}'s avatar`} className="icon" />
       <h2>{profile.username}</h2>
       <p className="muted small">Reading since {profile.createdAt}</p>
 
@@ -45,6 +46,10 @@ export default function Account({ profile, setProfile, books }) {
           </div>
         </>
       )}
+
+      <div className="section">
+        <Icon name="book-open" label="Booked Worm logo" className="icon" />
+      </div>
 
       <div className="section status-grid">
         {STATUSES.map((status) => (

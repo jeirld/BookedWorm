@@ -1,0 +1,40 @@
+/* StatusCard, list layout (matches the wireframe: one row per status,
+   a book cover on the left and the status name + count on the right).
+   Not in components.css since the wireframe's row layout replaced the
+   design system step's grid-of-cards version -- see CLAUDE.md. */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  min-height: 72px;
+  background: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 0.15s ease-out, transform 0.15s ease-out;
+}
+.row:hover {
+  border-color: var(--color-border);
+  transform: translateX(2px);
+}
+.row .cover {
+  width: 44px;
+  flex: none;
+}
+.text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font: var(--weight-semibold) var(--font-size-md) / 1.2 var(--font-body);
+}
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
