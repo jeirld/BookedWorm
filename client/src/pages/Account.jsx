@@ -50,7 +50,7 @@ export default function Account({ profile, setProfile, books }) {
           </>
         )}
 
-        <img src={logo} alt="Booked Worm logo" width="64" height="64" style={{ display: 'block' }} />
+        <img src={logo} alt="Booked Worm logo" width="120" height="120" style={{ display: 'block' }} />
       </div>
 
       <div className="panel status-grid">

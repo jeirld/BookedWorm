@@ -19,7 +19,7 @@ export default function Header({ title, onBack }) {
       <h1 className="header__title">
         {/* Decorative: the title text right next to it already says
             "Booked Worm", so the logo isn't announced a second time. */}
-        <img src={logo} alt="" width="28" height="28" className="header__logo" />
+        <img src={logo} alt="" width="44" height="44" className="header__logo" />
         {title}
       </h1>
     </header>
