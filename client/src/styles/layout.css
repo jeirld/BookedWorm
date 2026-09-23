@@ -43,3 +43,17 @@
     0 6px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(232, 218, 194, 0.05);
 }
+
+/* Header.jsx now puts the brand logo next to the title on every screen.
+   components.css centers .header__title with text-align, which still
+   works, but it's a block by default -- this makes it a flex row so the
+   logo and the text line up on one baseline instead of stacking. */
+.header__title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+}
+.header__logo {
+  flex: none;
+}
