@@ -9,7 +9,13 @@ import { getStatus } from '../utils/statuses.js'
 // more than this many, the rest spill onto a new shelf row (its own
 // <ul className="shelf"> + plank) underneath, instead of squeezing
 // everything onto one row.
-const SHELF_CAPACITY = 8
+//
+// 6, not 8: 6 original-size books (--tap-min wide + the 6px gap
+// components.css sets on .shelf) is 294px, which fits even on a
+// narrow 360px phone (~328px available after gutters). 8 would be
+// 394px -- too wide for that phone, needing a horizontal scroll every
+// time regardless of screen size.
+const SHELF_CAPACITY = 6
 
 function chunk(items, size) {
   const rows = []

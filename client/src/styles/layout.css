@@ -68,18 +68,27 @@
    is a fixed physical object -- it doesn't get longer or shorter as
    books are added or removed, it's just emptier or fuller. So instead
    of sizing the plank to however many books happen to be on it right
-   now, this sizes it once, for the full 8-book capacity (matches
-   SHELF_CAPACITY in Shelf.jsx: 8 * --tap-min + 7 gaps of the 6px
-   components.css sets on .shelf), and centers it with margin-inline:
-   auto. max-width plus .shelf's overflow-x below is the fallback for
-   a narrow phone, where a full 8 books doesn't quite fit -- it
-   scrolls sideways within the shelf rather than overflowing the page. */
+   now, this sizes it once, for the full SHELF_CAPACITY (6, Shelf.jsx:
+   6 * --tap-min + 5 gaps of the 6px components.css sets on .shelf),
+   and centers it with margin-inline: auto. 6 was chosen specifically
+   so this fits without scrolling even on a narrow 360px phone; max-
+   width plus .shelf's overflow-x below is just a safety net for
+   anything narrower than that. */
 .shelf-row {
-  width: calc(8 * var(--tap-min) + 7 * 6px);
+  width: calc(6 * var(--tap-min) + 5 * 6px);
   max-width: 100%;
   margin-inline: auto;
 }
+/* components.css gives .shelf its own left/right padding (var(--space-2),
+   16px each side) -- left over from when the plank spanned the full
+   page width and needed inset from the edges. Now that the shelf-row
+   wrapping it is already a tightly-sized, centered box, that padding
+   just eats into the 6-book budget above for no reason (it was making
+   a 6-book row overflow by 32px). Zeroing it here is the one place
+   this file overrides an existing components.css declaration instead
+   of only adding new ones -- everything else in this file is additive. */
 .shelf {
+  padding-inline: 0;
   overflow-x: auto;
 }
 /* A visible, tinted scrollbar -- but ONLY on rows that actually need
