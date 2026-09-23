@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import BookSpine from '../components/BookSpine.jsx'
 import AddButton from '../components/AddButton.jsx'
@@ -18,6 +19,45 @@ function chunk(items, size) {
   return rows
 }
 
+// One shelf row. Measures itself after render (and on resize) to know
+// whether its books actually overflow the fixed-width plank -- the
+// visible, tinted scrollbar (layout.css) only applies when they do, via
+// the `scrollable` class below. Without this check, a shelf with just
+// 1-2 books showed a full-width scrollbar with nothing to scroll: once
+// a browser's ::-webkit-scrollbar is custom-styled, it switches to
+// "classic" scrollbars that paint a full-track thumb even with zero
+// overflow, instead of just hiding like the native default does.
+function ShelfRow({ books, onOpen }) {
+  const ref = useRef(null)
+  const [scrollable, setScrollable] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    function check() {
+      setScrollable(el.scrollWidth > el.clientWidth + 1)
+    }
+
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [books])
+
+  return (
+    <div className="shelf-row">
+      <ul className={`shelf${scrollable ? ' shelf--scrollable' : ''}`} ref={ref}>
+        {books.map((book) => (
+          <li key={book.id}>
+            <BookSpine title={book.title} onClick={() => onOpen(book.id)} />
+          </li>
+        ))}
+      </ul>
+      <div className="shelf__plank" />
+    </div>
+  )
+}
+
 export default function Shelf({ books }) {
   const { status } = useParams()
   const navigate = useNavigate()
@@ -30,16 +70,7 @@ export default function Shelf({ books }) {
       <h2>{info ? info.label : 'Shelf'}</h2>
       {rows.length > 0 ? (
         rows.map((row, i) => (
-          <div key={i} className="shelf-row">
-            <ul className="shelf">
-              {row.map((book) => (
-                <li key={book.id}>
-                  <BookSpine title={book.title} onClick={() => navigate(`/books/${book.id}`)} />
-                </li>
-              ))}
-            </ul>
-            <div className="shelf__plank" />
-          </div>
+          <ShelfRow key={i} books={row} onOpen={(id) => navigate(`/books/${id}`)} />
         ))
       ) : (
         <div className="panel">

@@ -81,18 +81,24 @@
 }
 .shelf {
   overflow-x: auto;
-  /* A visible scrollbar, not just a silent overflow -- otherwise a
-     shelf that doesn't quite fit (e.g. 8 full-size books on a narrow
-     phone) clips its last book(s) off-screen with no hint you can
-     scroll to see them. Colours reuse tokens.css, no new ones. */
+}
+/* A visible, tinted scrollbar -- but ONLY on rows that actually need
+   it (Shelf.jsx's ShelfRow measures scrollWidth vs clientWidth and
+   adds this class). Styling ::-webkit-scrollbar unconditionally on
+   every .shelf switches Chromium to "classic" scrollbars that paint a
+   full-width thumb even with nothing to scroll, instead of hiding like
+   the native default -- that showed up as a mystery bar under every
+   shelf, even ones with just 1 book. Scoping it to .shelf--scrollable
+   keeps shelves that fit looking plain, with no scrollbar at all. */
+.shelf--scrollable {
   scrollbar-width: thin;
   scrollbar-color: var(--color-primary) transparent;
   padding-bottom: var(--space-2); /* room for the scrollbar so it doesn't sit on the spines */
 }
-.shelf::-webkit-scrollbar {
+.shelf--scrollable::-webkit-scrollbar {
   height: 8px;
 }
-.shelf::-webkit-scrollbar-thumb {
+.shelf--scrollable::-webkit-scrollbar-thumb {
   background: var(--color-primary);
   border-radius: var(--radius-full);
 }
