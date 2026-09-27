@@ -1,27 +1,24 @@
--- Sample data for development.
---
--- This starts with TRUNCATE. That is correct on your laptop and catastrophic
--- against the database your live demo depends on. Check which DATABASE_URL is
--- loaded before you run it.
+TRUNCATE TABLE notes, books, profile RESTART IDENTITY CASCADE;
 
-TRUNCATE TABLE sightings RESTART IDENTITY CASCADE;
+INSERT INTO profile (username, bio, created_at) VALUES
+  ('bookworm', 'Mostly dark academia and fantasy. Always slightly behind on my shelf.', '2026-01-12');
 
-INSERT INTO sightings (place, description, spookiness, reported_at) VALUES
-  ('Library, third floor',
-   'Chairs rearranged overnight, every time. The night guard says he locks the room himself.',
-   3, now() - interval '12 days'),
-  ('Old gym',
-   'Lights flicker in a fixed pattern after 9pm, always three short and one long.',
-   4, now() - interval '10 days'),
-  ('Parking basement',
-   'Footsteps with no one there. Reported separately by three different people in one week, which is what makes this one hard to dismiss. Two of them were alone at the time and did not know about the others. This row is deliberately long, because a seed of four words hides every text-wrapping bug you have.',
-   5, now() - interval '8 days'),
-  ('Canteen',
-   'A cold spot near the back door, every morning before seven.',
-   1, now() - interval '7 days'),
-  ('AB Building stairwell',
-   '',
-   2, now() - interval '5 days'),
-  ('Chapel garden',
-   'Someone humming. Stops the moment you turn around.',
-   3, now() - interval '2 days');
+INSERT INTO books (title, author, blurb, status, rating, notes, created_at) VALUES
+  ('The Secret History', 'Donna Tartt',
+   'A group of classics students at a New England college get away with murder, then slowly come apart.',
+   'finished', 5, 'Reread for the atmosphere alone.', '2026-01-12'),
+  ('Piranesi', 'Susanna Clarke',
+   'A man lives alone in a vast, flooding House of endless halls and statues, and starts to question what he remembers.',
+   'reading', 4, '', '2026-01-13'),
+  ('Jonathan Strange & Mr Norrell', 'Susanna Clarke',
+   'Two magicians bring magic back to England, and find they do not agree on what it should be used for.',
+   'want-to-read', 0, '', '2026-01-14'),
+  ('Ninth House', 'Leigh Bardugo',
+   'A Yale freshman with a dark gift is recruited to police the secret societies that practice real magic.',
+   'dropped', 2, 'Might come back to it later.', '2026-01-15'),
+  ('The Goldfinch', 'Donna Tartt',
+   'A boy survives an accident that kills his mother and steals a painting that shapes the rest of his life.',
+   'want-to-read', 0, '', '2026-01-16'),
+  ('Circe', 'Madeline Miller',
+   'A minor goddess is exiled to a deserted island and slowly becomes someone the gods have to reckon with.',
+   'finished', 5, '', '2026-01-17');

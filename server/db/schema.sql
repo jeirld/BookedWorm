@@ -1,20 +1,30 @@
--- The complete shape of the database. Safe to run against an empty database,
--- and safe to run twice.
---
--- This file is committed on purpose. Your schema is a fact about your
--- application, not a runtime concern: it should be readable by opening a file
--- rather than by connecting to a server. It is also what lets you move to a
--- hosted database in one command.
-
-CREATE TABLE IF NOT EXISTS sightings (
-  id          SERIAL PRIMARY KEY,
-  place       TEXT        NOT NULL,
-  description TEXT        NOT NULL DEFAULT '',
-  spookiness  INTEGER     NOT NULL CHECK (spookiness BETWEEN 1 AND 5),
-  reported_at TIMESTAMPTZ NOT NULL DEFAULT now()
+CREATE TABLE IF NOT EXISTS profile (
+  id         SERIAL PRIMARY KEY,
+  username   TEXT NOT NULL,
+  bio        TEXT NOT NULL DEFAULT '',
+  created_at DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
--- The list page always sorts newest first. Without this the database reads
--- every row and sorts it on each request.
-CREATE INDEX IF NOT EXISTS sightings_reported_at_idx
-  ON sightings (reported_at DESC);
+CREATE TABLE IF NOT EXISTS books (
+  id         SERIAL PRIMARY KEY,
+  title      TEXT        NOT NULL,
+  author     TEXT        NOT NULL,
+  blurb      TEXT        NOT NULL DEFAULT '',
+  status     TEXT        NOT NULL DEFAULT 'want-to-read'
+             CHECK (status IN ('want-to-read', 'reading', 'finished', 'dropped')),
+  rating     INTEGER     NOT NULL DEFAULT 0 CHECK (rating BETWEEN 0 AND 5),
+  notes      TEXT        NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS notes (
+  id         SERIAL PRIMARY KEY,
+  book_id    INTEGER     NOT NULL REFERENCES books (id) ON DELETE CASCADE,
+  title      TEXT        NOT NULL,
+  body       TEXT        NOT NULL DEFAULT '',
+  note_date  DATE        NOT NULL DEFAULT CURRENT_DATE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS books_status_idx ON books (status);
+CREATE INDEX IF NOT EXISTS notes_book_id_idx ON notes (book_id);
