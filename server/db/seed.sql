@@ -4,21 +4,15 @@ INSERT INTO profile (username, bio, created_at) VALUES
   ('bookworm', 'Mostly dark academia and fantasy. Always slightly behind on my shelf.', '2026-01-12');
 
 INSERT INTO books (title, author, blurb, status, rating, notes, created_at) VALUES
-  ('The Secret History', 'Donna Tartt',
-   'A group of classics students at a New England college get away with murder, then slowly come apart.',
-   'finished', 5, 'Reread for the atmosphere alone.', '2026-01-12'),
-  ('Piranesi', 'Susanna Clarke',
-   'A man lives alone in a vast, flooding House of endless halls and statues, and starts to question what he remembers.',
+  ('Harry Potter and the Philosopher''s Stone', 'J.K. Rowling',
+   'An orphaned boy learns on his eleventh birthday that he is a wizard, and is swept off to a school where nothing is what it seems.',
+   'finished', 5, 'Comfort reread.', '2026-01-12'),
+  ('Percy Jackson and the Lightning Thief', 'Rick Riordan',
+   'A troubled twelve-year-old discovers he is the son of a Greek god and is accused of stealing a weapon he never took.',
    'reading', 4, '', '2026-01-13'),
-  ('Jonathan Strange & Mr Norrell', 'Susanna Clarke',
-   'Two magicians bring magic back to England, and find they do not agree on what it should be used for.',
+  ('When Cats Disappear from the World', 'Genki Kawamura',
+   'A dying postman strikes a bargain with the devil, erasing one thing from the world for every extra day of life, and has to decide what he can live without.',
    'want-to-read', 0, '', '2026-01-14'),
-  ('Ninth House', 'Leigh Bardugo',
-   'A Yale freshman with a dark gift is recruited to police the secret societies that practice real magic.',
-   'dropped', 2, 'Might come back to it later.', '2026-01-15'),
-  ('The Goldfinch', 'Donna Tartt',
-   'A boy survives an accident that kills his mother and steals a painting that shapes the rest of his life.',
-   'want-to-read', 0, '', '2026-01-16'),
-  ('Circe', 'Madeline Miller',
-   'A minor goddess is exiled to a deserted island and slowly becomes someone the gods have to reckon with.',
-   'finished', 5, '', '2026-01-17');
+  ('No Longer Human', 'Osamu Dazai',
+   'A man who has never understood how to be human narrates his slow disintegration from childhood performance to total isolation.',
+   'dropped', 2, 'Too bleak for right now.', '2026-01-15');
