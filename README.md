@@ -42,9 +42,10 @@ npm install
 Every `VITE_` value is compiled into the built JavaScript and is **public**.
 Never put a key, a password, or a connection string in one.
 
-**Database setup and seeding.** Not needed yet. The app currently saves to
-the browser's own storage, seeded from `client/src/api/seed.json` the first
-time it loads. There is no real database to set up until the backend exists.
+**Database setup and seeding.** The schema (`server/db/schema.sql`) and seed
+data (`server/db/seed.sql`) already exist and can be set up locally with
+`npm run db:reset` from `server/`. The Express API hasn't been rebuilt to use
+them yet, so for now the client still runs on the mock API described above.
 
 ## 3. How to run it
 
@@ -104,7 +105,8 @@ client/
     pages/        one file per screen (Home, Shelf, BookDetails, ...)
     styles/       tokens.css, components.css (design system), layout.css
     utils/        small helpers (statuses, spine colours/heights)
-server/           Express + PostgreSQL starter (not yet adapted to books)
+server/           Express + PostgreSQL. Schema for books/notes/profile
+                   is done, routes are still being rebuilt
 docs/             planning documents and weekly reports
 ```
 
@@ -124,15 +126,17 @@ Book details:
 
 ## 7. Known issues and next steps
 
-- No real backend yet.
-- Nothing is deployed The GitHub Pages workflow is set up but hasn't
+- No real backend API yet. The database schema is designed and seeded
+  (`server/db/`), but the Express routes still need rebuilding for
+  books/notes/profile.
+- Nothing is deployed. The GitHub Pages workflow is set up but hasn't
   been triggered, and there's no API or database host yet.
 - No delete UI. The API layer already has deleteBook/deleteNote, but
   no button calls them yet.
-- No login The app assumes a single user for now; the profile table
+- No login. The app assumes a single user for now; the profile table
   is shaped so a real login can be added later without a rewrite.
-- Next: build the Express routes and PostgreSQL schema, deploy all three
-  pieces, then add delete buttons and any remaining polish.
+- for my next steps I will finish the Express routes, deploy all three pieces, then add
+  delete buttons and any remaining polish.
 
 ## AI use
 

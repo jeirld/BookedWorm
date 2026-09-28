@@ -1,5 +1,48 @@
 # Weekly Increment Report
 
+## Week of: 2026-09-27
+
+## What changed this week
+
+- Started my second part of the development, the real backend. Designed the PostgreSQL schema
+  for the three actual resources (profile, books, notes), replacing some of the templates.
+- Added a foreign key from notes to books, so a note always belongs to
+  one book and gets deleted along with it. Also added a check
+  constraint on status so the database can't end up with a status the
+  app doesn't recognize.
+- Seeded the database with sample data, personalized with books I've
+  actually read instead of placeholder titles.
+- Pushed the schema and seed data to GitHub as their own commit,
+  separate from the query and route code that's still in progress.
+
+## Why
+
+Backend work is too big to do in one sitting, so I'm building it in
+layers instead: schema first, then the queries, then the routes,
+committing each layer once it works. That way the commit history
+actually shows how it came together.
+
+## What broke or what I got stuck on
+
+- While testing the schema, found that PostgreSQL date columns come
+  back as JavaScript Date objects instead of plain strings. Two screens
+  (Account and the note list) print the date straight into the page, so
+  this would have crashed the app the moment it hit a real database
+  instead of the mock. Fixed it before it ever reaches an API response.
+
+## What is left
+
+- The query layer (parameterized SQL for books, notes, profile) and the
+  Express routes themselves, written but not committed yet.
+- Deploying all three pieces: client to GitHub Pages, API to a host,
+  database to a host. Nothing is live yet.
+- Delete for books and notes. The API layer already supports it, but no
+  buttons yet.
+- The rest of the doc files, and the demo video.
+- Writing AI-USAGE.md
+
+---
+
 ## Week of: 2026-09-23
 
 ## What changed this week
