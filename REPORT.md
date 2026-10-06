@@ -1,5 +1,50 @@
 # Weekly Increment Report
 
+## Week of: 2026-10-04
+
+## What changed this week
+
+- Pushed the repo layer (booksRepo, notesRepo, profileRepo) and the
+  Express routes + validation as two separate commits on two separate
+  days, continuing the plan from last week.
+- Set up a real PostgreSQL database (Neon, free tier) instead of
+  testing against pg-mem only. Ran the schema and seed against it, then
+  exercised every route for real: creating and partially updating a
+  book, creating a note with a bad bookId and confirming it returns a
+  clean 400 instead of crashing, and deleting a book to confirm its
+  notes actually cascade-delete.
+- Confirmed the pool.js date-parsing bugfix is both necessary and
+  correct against a real database, not just pg-mem's imitation of one.
+
+## Why
+
+pg-mem only imitates Postgres, and I didn't want to find out during
+deployment that something that passed pg-mem doesn't actually work
+against the real thing. Testing against a real hosted database now,
+before picking an API host, means deployment day is just "point the
+API at a database that's already proven to work" instead of debugging
+the database and the host at the same time.
+
+## What broke or what I got stuck on
+
+- Nothing broke against the real database that hadn't already been
+  caught by pg-mem. The one open item is that the pool.js bugfix is
+  tested and working but still not committed -- it's sitting staged,
+  waiting for its own day so the commit history doesn't bunch two
+  unrelated days of work into one timestamp.
+
+## What is left
+
+- Commit and push the pool.js bugfix.
+- Deploy all three pieces: client to GitHub Pages, API to a host,
+  database to a host (database is already set up and tested).
+- Delete for books and notes. The API layer already supports it, but no
+  buttons yet.
+- The rest of the doc files, the security checklist, and the demo video.
+- Writing AI-USAGE.md.
+
+---
+
 ## Week of: 2026-09-27
 
 ## What changed this week
@@ -18,7 +63,7 @@
 ## Why
 
 Backend work is too big to do in one sitting, so I'm building it in
-layers instead: schema first, then the queries, then the routes,
+layers instead so that I can visually see the progress without getting overloaded by all codes: schema first, then the queries, then the routes,
 committing each layer once it works. That way the commit history
 actually shows how it came together.
 
