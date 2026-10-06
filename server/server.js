@@ -1,16 +1,12 @@
 import express from 'express'
 import cors from 'cors'
 import { pool } from './db/pool.js'
-import * as sightings from './sightingsRepo.js'
+import * as books from './booksRepo.js'
+import * as notes from './notesRepo.js'
+import * as profile from './profileRepo.js'
 
 const app = express()
 
-// CORS before the routes. Middleware registered after a route never sees that
-// route's requests, which is the m4 lesson showing up in production.
-//
-// Name your origins. app.use(cors()) with no options sends
-// Access-Control-Allow-Origin: *, which lets any site on the internet call this
-// API from a visitor's browser, and is incompatible with cookies.
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .split(',')
   .map((origin) => origin.trim())
@@ -19,13 +15,10 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({ limit: '100kb' }))
 
-// Is the process alive?
 app.get('/healthz', (request, response) => {
   response.json({ ok: true })
 })
 
-// Is the database reachable? A different question, and the one that tells you
-// in two seconds which half of a problem you have.
 app.get('/readyz', async (request, response) => {
   try {
     await pool.query('SELECT 1')
@@ -36,36 +29,72 @@ app.get('/readyz', async (request, response) => {
   }
 })
 
-// Validation lives on the server because the client can be bypassed. The
-// browser form is for a fast, friendly message; this is for correctness.
-function validate(body) {
+const STATUSES = ['want-to-read', 'reading', 'finished', 'dropped']
+
+function validateBook(body, defaults) {
   const errors = []
-  const place = typeof body.place === 'string' ? body.place.trim() : ''
-  const description =
-    typeof body.description === 'string' ? body.description.trim() : ''
-  const spookiness = Number(body.spookiness)
+  const title = typeof body.title === 'string' ? body.title.trim() : defaults.title
+  const author = typeof body.author === 'string' ? body.author.trim() : defaults.author
+  const blurb = typeof body.blurb === 'string' ? body.blurb.trim() : defaults.blurb
+  const status = typeof body.status === 'string' ? body.status : defaults.status
+  const rating = body.rating === undefined ? defaults.rating : Number(body.rating)
+  const notesText = typeof body.notes === 'string' ? body.notes.trim() : defaults.notes
 
-  if (!place) errors.push('place is required')
-  if (place.length > 120) errors.push('place must be 120 characters or fewer')
-  if (description.length > 2000) errors.push('description must be 2000 characters or fewer')
-  if (!Number.isInteger(spookiness) || spookiness < 1 || spookiness > 5) {
-    errors.push('spookiness must be a whole number from 1 to 5')
+  if (!title) errors.push('title is required')
+  if (title.length > 200) errors.push('title must be 200 characters or fewer')
+  if (!author) errors.push('author is required')
+  if (author.length > 200) errors.push('author must be 200 characters or fewer')
+  if (blurb.length > 2000) errors.push('blurb must be 2000 characters or fewer')
+  if (!STATUSES.includes(status)) errors.push(`status must be one of: ${STATUSES.join(', ')}`)
+  if (!Number.isInteger(rating) || rating < 0 || rating > 5) {
+    errors.push('rating must be a whole number from 0 to 5')
   }
+  if (notesText.length > 2000) errors.push('notes must be 2000 characters or fewer')
 
-  return { errors, value: { place, description, spookiness } }
+  return { errors, value: { title, author, blurb, status, rating, notes: notesText } }
 }
 
-app.get('/api/sightings', async (request, response, next) => {
+function validateNote(body, defaults) {
+  const errors = []
+  const bookId = body.bookId === undefined ? defaults.bookId : Number(body.bookId)
+  const title = typeof body.title === 'string' ? body.title.trim() : defaults.title
+  const noteBody = typeof body.body === 'string' ? body.body.trim() : defaults.body
+  const date = typeof body.date === 'string' && body.date ? body.date : defaults.date
+
+  if (!Number.isInteger(bookId)) errors.push('bookId is required')
+  if (!title) errors.push('title is required')
+  if (title.length > 200) errors.push('title must be 200 characters or fewer')
+  if (noteBody.length > 5000) errors.push('body must be 5000 characters or fewer')
+  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push('date must be in YYYY-MM-DD format')
+
+  return { errors, value: { bookId, title, body: noteBody, date } }
+}
+
+function validateProfile(body, defaults) {
+  const errors = []
+  const username = typeof body.username === 'string' ? body.username.trim() : defaults.username
+  const bio = typeof body.bio === 'string' ? body.bio.trim() : defaults.bio
+
+  if (!username) errors.push('username is required')
+  if (username.length > 60) errors.push('username must be 60 characters or fewer')
+  if (bio.length > 2000) errors.push('bio must be 2000 characters or fewer')
+
+  return { errors, value: { username, bio } }
+}
+
+// ---- Books ------------------------------------------------------------
+
+app.get('/api/books', async (request, response, next) => {
   try {
-    response.json(await sightings.getAll(pool))
+    response.json(await books.getAll(pool))
   } catch (error) {
     next(error)
   }
 })
 
-app.get('/api/sightings/:id', async (request, response, next) => {
+app.get('/api/books/:id', async (request, response, next) => {
   try {
-    const row = await sightings.getById(pool, request.params.id)
+    const row = await books.getById(pool, request.params.id)
     if (!row) return response.status(404).json({ error: 'Not found' })
     response.json(row)
   } catch (error) {
@@ -73,35 +102,111 @@ app.get('/api/sightings/:id', async (request, response, next) => {
   }
 })
 
-app.post('/api/sightings', async (request, response, next) => {
-  const { errors, value } = validate(request.body ?? {})
+app.post('/api/books', async (request, response, next) => {
+  const defaults = { title: '', author: '', blurb: '', status: 'want-to-read', rating: 0, notes: '' }
+  const { errors, value } = validateBook(request.body ?? {}, defaults)
   if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
 
   try {
-    response.status(201).json(await sightings.create(pool, value))
+    response.status(201).json(await books.create(pool, value))
   } catch (error) {
     next(error)
   }
 })
 
-app.put('/api/sightings/:id', async (request, response, next) => {
-  const { errors, value } = validate(request.body ?? {})
-  if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
-
+app.patch('/api/books/:id', async (request, response, next) => {
   try {
-    const row = await sightings.update(pool, request.params.id, value)
-    if (!row) return response.status(404).json({ error: 'Not found' })
-    response.json(row)
+    const current = await books.getById(pool, request.params.id)
+    if (!current) return response.status(404).json({ error: 'Not found' })
+
+    const { errors, value } = validateBook(request.body ?? {}, current)
+    if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+
+    response.json(await books.update(pool, request.params.id, value))
   } catch (error) {
     next(error)
   }
 })
 
-app.delete('/api/sightings/:id', async (request, response, next) => {
+app.delete('/api/books/:id', async (request, response, next) => {
   try {
-    const removed = await sightings.remove(pool, request.params.id)
+    const removed = await books.remove(pool, request.params.id)
     if (!removed) return response.status(404).json({ error: 'Not found' })
     response.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ---- Notes --------------------------------------------------------------
+
+app.get('/api/notes', async (request, response, next) => {
+  try {
+    response.json(await notes.getAll(pool))
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.post('/api/notes', async (request, response, next) => {
+  const defaults = { bookId: undefined, title: '', body: '', date: undefined }
+  const { errors, value } = validateNote(request.body ?? {}, defaults)
+  if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+
+  try {
+    response.status(201).json(await notes.create(pool, value))
+  } catch (error) {
+    if (error.code === '23503') return response.status(400).json({ error: 'bookId does not match a book' })
+    next(error)
+  }
+})
+
+app.patch('/api/notes/:id', async (request, response, next) => {
+  try {
+    const current = await notes.getById(pool, request.params.id)
+    if (!current) return response.status(404).json({ error: 'Not found' })
+
+    const { errors, value } = validateNote(request.body ?? {}, current)
+    if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+
+    response.json(await notes.update(pool, request.params.id, value))
+  } catch (error) {
+    if (error.code === '23503') return response.status(400).json({ error: 'bookId does not match a book' })
+    next(error)
+  }
+})
+
+app.delete('/api/notes/:id', async (request, response, next) => {
+  try {
+    const removed = await notes.remove(pool, request.params.id)
+    if (!removed) return response.status(404).json({ error: 'Not found' })
+    response.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ---- Profile (a single row, no login yet) --------------------------------
+
+app.get('/api/profile', async (request, response, next) => {
+  try {
+    const row = await profile.get(pool)
+    if (!row) return response.status(404).json({ error: 'Not found' })
+    response.json(row)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.patch('/api/profile', async (request, response, next) => {
+  try {
+    const current = await profile.get(pool)
+    if (!current) return response.status(404).json({ error: 'Not found' })
+
+    const { errors, value } = validateProfile(request.body ?? {}, current)
+    if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+
+    response.json(await profile.update(pool, value))
   } catch (error) {
     next(error)
   }
@@ -111,15 +216,11 @@ app.use((request, response) => {
   response.status(404).json({ error: 'No such route' })
 })
 
-// The detail goes in your logs; the visitor gets a plain message. Sending a
-// stack trace to a stranger tells them about your file layout and dependencies.
 app.use((error, request, response, next) => {
   console.error(error)
   response.status(500).json({ error: 'Something went wrong on the server' })
 })
 
-// The host chooses the port and tells you through PORT. Hardcoding 3000 is the
-// commonest reason a first deploy is marked unhealthy and killed.
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
