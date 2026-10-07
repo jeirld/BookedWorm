@@ -110,6 +110,11 @@ export default function App() {
     setNotes((prev) => prev.map((note) => (note.id === id ? updated : note)))
   }
 
+  async function deleteNote(id) {
+    await api.deleteNote(id)
+    setNotes((prev) => prev.filter((note) => note.id !== id))
+  }
+
   async function updateProfile(changes) {
     const updated = await api.updateProfile(changes)
     setProfile(updated)
@@ -133,7 +138,7 @@ export default function App() {
             />
             <Route
               path="/notes"
-              element={<Notes notes={notes} books={books} updateNote={updateNote} />}
+              element={<Notes notes={notes} books={books} updateNote={updateNote} deleteNote={deleteNote} />}
             />
             <Route path="/notes/new" element={<NewNote books={books} addNote={addNote} />} />
             <Route

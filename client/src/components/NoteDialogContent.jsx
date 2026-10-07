@@ -2,15 +2,8 @@ import { useState } from 'react'
 import Button from './Button.jsx'
 import FormField from './FormField.jsx'
 
-// The dialog's body. Keyed by note.id in NoteDialog.jsx, so this remounts
-// (fresh local state) whenever a different note is opened, the same
-// key-remount pattern used in pages/BookDetails.jsx.
-//
-// Matches the wireframe's pop-up: tapping a note first asks "Do you want
-// to edit this note?" (Read / Edit), which then opens a read-only view or
-// an editable form. Read and Edit have no separate sketches of their own
-// (see CLAUDE.md), so their exact layout is this component's call.
-export default function NoteDialogContent({ note, onSave, onClose }) {
+
+export default function NoteDialogContent({ note, onSave, onDelete, onClose }) {
   const [step, setStep] = useState('choice') // 'choice' | 'read' | 'edit'
   const [title, setTitle] = useState(note.title)
   const [body, setBody] = useState(note.body)
@@ -21,6 +14,12 @@ export default function NoteDialogContent({ note, onSave, onClose }) {
     await onSave(note.id, { title, body })
     setSaving(false)
     setStep('read')
+  }
+
+  async function handleDelete() {
+    if (!window.confirm('Are you sure you want to delete this note?')) return
+    await onDelete(note.id)
+    onClose()
   }
 
   if (step === 'choice') {
@@ -52,6 +51,9 @@ export default function NoteDialogContent({ note, onSave, onClose }) {
           </Button>
           <Button variant="primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
+          </Button>
+          <Button variant="secondary" onClick={handleDelete} disabled={saving}>
+            Delete
           </Button>
         </div>
       </>

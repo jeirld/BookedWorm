@@ -5,7 +5,7 @@ import NoteDialog from '../components/NoteDialog.jsx'
 import AddButton from '../components/AddButton.jsx'
 import Icon from '../components/Icon.jsx'
 
-export default function Notes({ notes, books, updateNote }) {
+export default function Notes({ notes, books, updateNote, deleteNote }) {
   const navigate = useNavigate()
   const [openId, setOpenId] = useState(null)
   const openNote = notes.find((n) => n.id === openId) ?? null
@@ -42,6 +42,7 @@ export default function Notes({ notes, books, updateNote }) {
       <NoteDialog
         note={openNote ? { ...openNote, bookTitle: bookTitle(openNote.bookId) } : null}
         onSave={updateNote}
+        onDelete={deleteNote}
         onClose={() => setOpenId(null)}
       />
     </section>
