@@ -67,19 +67,21 @@ open it, or use the Add book button.
 
 Book details - shows the title, star rating, blurb, status, and author.
 Change the rating or status and press Save; the screen stays open so you can
-keep adjusting.
+keep adjusting. Delete removes the book (after a confirmation) and takes you
+back to its shelf; the book's notes are deleted with it.
 
 Add book - is a form for the title, author, an optional blurb, a status,
 and an optional rating. Saving sends you to the shelf matching the status you
 picked.
 
 Notes - lists notes as cards. Tapping one asks whether you want to read or
-edit it, then opens the matching view.
+edit it, then opens the matching view. Delete is in the edit view, with a
+confirmation.
 
 Account - shows the username, join date, and a biography you can edit.
 
-**API (planned, not live yet).** `client/src/api/httpApi.js` already defines
-the endpoints the real backend needs to implement:
+**API (written, not deployed yet).** The Express server in `server/server.js`
+implements the endpoints `client/src/api/httpApi.js` calls:
 
 | Method | Path | What it does |
 | --- | --- | --- |
@@ -126,17 +128,14 @@ Book details:
 
 ## 7. Known issues and next steps
 
-- No real backend API yet. The database schema is designed and seeded
-  (`server/db/`), but the Express routes still need rebuilding for
-  books/notes/profile.
+- The API and database schema are done and tested against a real
+  PostgreSQL database, but only run locally so far.
 - Nothing is deployed. The GitHub Pages workflow is set up but hasn't
   been triggered, and there's no API or database host yet.
-- No delete UI. The API layer already has deleteBook/deleteNote, but
-  no button calls them yet.
 - No login. The app assumes a single user for now; the profile table
   is shaped so a real login can be added later without a rewrite.
-- for my next steps I will finish the Express routes, deploy all three pieces, then add
-  delete buttons and any remaining polish.
+- for my next steps I will deploy all three pieces (client, API, database),
+  point the live site at the real API, then do any remaining polish.
 
 ## AI use
 
