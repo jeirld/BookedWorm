@@ -1,5 +1,12 @@
 import pg from 'pg'
 
+// pg parses DATE/TIMESTAMP columns into JS Date objects by default. The
+// client renders profile.createdAt and note.date directly as text, so keep
+// them as the plain strings Postgres sends.
+pg.types.setTypeParser(1082, (value) => value) // date
+pg.types.setTypeParser(1114, (value) => value) // timestamp without time zone
+pg.types.setTypeParser(1184, (value) => value) // timestamp with time zone
+
 // Fail at boot with one clear line, rather than with a mystery 500 an hour
 // later. The commonest deployment mistake is setting a variable in .env on your
 // laptop and never setting it in the host's dashboard.
