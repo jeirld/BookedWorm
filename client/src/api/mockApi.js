@@ -86,6 +86,7 @@ export async function updateBook(id, input) {
 export async function deleteBook(id) {
   await delay()
   write(BOOKS_KEY, read(BOOKS_KEY, seed.books).filter((row) => row.id !== Number(id)))
+  write(NOTES_KEY, read(NOTES_KEY, seed.notes).filter((row) => row.bookId !== Number(id)))
 }
 
 // ---- Notes --------------------------------------------------------------

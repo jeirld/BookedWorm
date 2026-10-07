@@ -87,6 +87,12 @@ export default function App() {
     setBooks((prev) => prev.map((book) => (book.id === id ? updated : book)))
   }
 
+  async function deleteBook(id) {
+    await api.deleteBook(id)
+    setBooks((prev) => prev.filter((book) => book.id !== id))
+    setNotes((prev) => prev.filter((note) => note.bookId !== id))
+  }
+
   async function addBook(book) {
     const created = await api.createBook(book)
     setBooks((prev) => [...prev, created])
@@ -123,7 +129,7 @@ export default function App() {
             <Route path="/books/new" element={<AddBook addBook={addBook} />} />
             <Route
               path="/books/:id"
-              element={<BookDetails books={books} updateBook={updateBook} />}
+              element={<BookDetails books={books} updateBook={updateBook} deleteBook={deleteBook} />}
             />
             <Route
               path="/notes"
