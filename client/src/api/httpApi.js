@@ -1,9 +1,32 @@
+import { SIGNED_OUT_EVENT } from './events.js'
+
 const BASE = import.meta.env.VITE_API_BASE_URL || ''
+const TOKEN_KEY = 'bookedworm:token'
+
+function getToken() {
+  try {
+    return localStorage.getItem(TOKEN_KEY)
+  } catch {
+    return null
+  }
+}
+
+function setToken(token) {
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token)
+    else localStorage.removeItem(TOKEN_KEY)
+  } catch {
+  }
+}
 
 async function request(path, options) {
+  const token = getToken()
   const response = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   })
 
   if (!response.ok) {
@@ -13,10 +36,36 @@ async function request(path, options) {
       if (body?.error) message = body.error
     } catch {
     }
+    if (response.status === 401 && token && !path.startsWith('/api/auth/')) {
+      setToken(null)
+      window.dispatchEvent(new Event(SIGNED_OUT_EVENT))
+    }
     throw new Error(message)
   }
 
   return response.status === 204 ? null : response.json()
+}
+
+export const hasSession = () => Boolean(getToken())
+
+export async function register(input) {
+  const result = await request('/api/auth/register', { method: 'POST', body: JSON.stringify(input) })
+  setToken(result.token)
+  return result.profile
+}
+
+export async function login(input) {
+  const result = await request('/api/auth/login', { method: 'POST', body: JSON.stringify(input) })
+  setToken(result.token)
+  return result.profile
+}
+
+export async function logout() {
+  try {
+    await request('/api/auth/logout', { method: 'POST' })
+  } finally {
+    setToken(null)
+  }
 }
 
 export const listBooks = () => request('/api/books')

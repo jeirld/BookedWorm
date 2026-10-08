@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Routes, Route, Outlet, useLocation } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Header from './components/Header.jsx'
 import BottomNav from './components/BottomNav.jsx'
 import Home from './pages/Home.jsx'
@@ -9,7 +9,10 @@ import AddBook from './pages/AddBook.jsx'
 import Notes from './pages/Notes.jsx'
 import NewNote from './pages/NewNote.jsx'
 import Account from './pages/Account.jsx'
+import Login from './pages/Login.jsx'
+import Signup from './pages/Signup.jsx'
 import * as api from './api/index.js'
+import { SIGNED_OUT_EVENT } from './api/events.js'
 
 const ROOT_ROUTES = ['/', '/notes', '/account']
 
@@ -24,6 +27,17 @@ function Layout() {
         <Outlet />
       </main>
       <BottomNav />
+    </>
+  )
+}
+
+function AuthLayout() {
+  return (
+    <>
+      <Header title="Booked Worm" onBack={null} />
+      <main className="page">
+        <Outlet />
+      </main>
     </>
   )
 }
@@ -43,21 +57,57 @@ export default function App() {
   const [books, setBooks] = useState(null)
   const [notes, setNotes] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [signedIn, setSignedIn] = useState(() => api.hasSession())
+  const navigate = useNavigate()
+
+  function clearSession() {
+    setBooks(null)
+    setNotes(null)
+    setProfile(null)
+    setSignedIn(false)
+    navigate('/login', { replace: true })
+  }
 
   useEffect(() => {
+    window.addEventListener(SIGNED_OUT_EVENT, clearSession)
+    return () => window.removeEventListener(SIGNED_OUT_EVENT, clearSession)
+  })
+
+  useEffect(() => {
+    if (!signedIn) return
     let cancelled = false
-    Promise.all([api.listBooks(), api.listNotes(), api.getProfile()]).then(
-      ([booksResult, notesResult, profileResult]) => {
+    Promise.all([api.listBooks(), api.listNotes(), api.getProfile()])
+      .then(([booksResult, notesResult, profileResult]) => {
         if (cancelled) return
         setBooks(booksResult)
         setNotes(notesResult)
         setProfile(profileResult)
-      },
-    )
+      })
+      .catch(() => {})
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [signedIn])
+
+  async function signup(credentials) {
+    await api.register(credentials)
+    setSignedIn(true)
+    navigate('/', { replace: true })
+  }
+
+  async function login(credentials) {
+    await api.login(credentials)
+    setSignedIn(true)
+    navigate('/', { replace: true })
+  }
+
+  async function logout() {
+    try {
+      await api.logout()
+    } catch {
+    }
+    clearSession()
+  }
 
   async function updateBook(id, changes) {
     const updated = await api.updateBook(id, changes)
@@ -99,6 +149,18 @@ export default function App() {
 
   const loading = books === null || notes === null || profile === null
 
+  if (!signedIn) {
+    return (
+      <Routes>
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login onLogin={login} />} />
+          <Route path="/signup" element={<Signup onSignup={signup} />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Route>
+      </Routes>
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -120,7 +182,7 @@ export default function App() {
             <Route path="/notes/new" element={<NewNote books={books} addNote={addNote} />} />
             <Route
               path="/account"
-              element={<Account profile={profile} updateProfile={updateProfile} books={books} />}
+              element={<Account profile={profile} updateProfile={updateProfile} books={books} onLogout={logout} />}
             />
           </>
         )}

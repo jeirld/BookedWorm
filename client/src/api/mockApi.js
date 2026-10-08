@@ -1,8 +1,10 @@
 import seed from './seed.json'
 
-const BOOKS_KEY = 'bookedworm:books'
-const NOTES_KEY = 'bookedworm:notes'
-const PROFILE_KEY = 'bookedworm:profile'
+const USERS_KEY = 'bookedworm:users'
+const SESSION_KEY = 'bookedworm:session'
+
+// Demo mode only: passwords sit in plain text in this browser and are never sent anywhere.
+const DEMO_USER = { ...seed.profile, password: 'readmore123' }
 
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -28,21 +30,81 @@ function nextId(rows) {
   return rows.length ? Math.max(...rows.map((r) => r.id)) + 1 : 1
 }
 
+function currentUserId() {
+  const id = localStorage.getItem(SESSION_KEY)
+  if (!id) throw new Error('Please log in')
+  return Number(id)
+}
+
+const readUsers = () => read(USERS_KEY, [DEMO_USER])
+
+const publicProfile = ({ password: _password, ...rest }) => rest
+
+const booksKey = () => `bookedworm:books:${currentUserId()}`
+const notesKey = () => `bookedworm:notes:${currentUserId()}`
+const readBooks = () => read(booksKey(), currentUserId() === DEMO_USER.id ? seed.books : [])
+const readNotes = () => read(notesKey(), currentUserId() === DEMO_USER.id ? seed.notes : [])
+
+function checkUsername(username, users, ownId) {
+  if (username.length < 3 || username.length > 30) {
+    throw new Error('username must be 3 to 30 characters')
+  }
+  if (!/^[A-Za-z0-9_.-]+$/.test(username)) {
+    throw new Error('username can only use letters, numbers, dots, dashes and underscores')
+  }
+  const taken = users.some((u) => u.id !== ownId && u.username.toLowerCase() === username.toLowerCase())
+  if (taken) throw new Error('That username is already taken')
+}
+
+export const hasSession = () => Boolean(localStorage.getItem(SESSION_KEY))
+
+export async function register({ username, password }) {
+  await delay()
+  const users = readUsers()
+  const name = username.trim()
+  checkUsername(name, users, null)
+  if (password.length < 8) throw new Error('password must be at least 8 characters')
+
+  const created = {
+    id: nextId(users),
+    username: name,
+    password,
+    bio: '',
+    createdAt: new Date().toISOString().slice(0, 10),
+  }
+  write(USERS_KEY, [...users, created])
+  localStorage.setItem(SESSION_KEY, String(created.id))
+  return publicProfile(created)
+}
+
+export async function login({ username, password }) {
+  await delay()
+  const found = readUsers().find((u) => u.username.toLowerCase() === username.trim().toLowerCase())
+  if (!found || found.password !== password) throw new Error('Wrong username or password')
+  localStorage.setItem(SESSION_KEY, String(found.id))
+  return publicProfile(found)
+}
+
+export async function logout() {
+  await delay()
+  localStorage.removeItem(SESSION_KEY)
+}
+
 export async function listBooks() {
   await delay()
-  return read(BOOKS_KEY, seed.books)
+  return readBooks()
 }
 
 export async function getBook(id) {
   await delay()
-  const found = read(BOOKS_KEY, seed.books).find((row) => row.id === Number(id))
+  const found = readBooks().find((row) => row.id === Number(id))
   if (!found) throw new Error('Not found')
   return found
 }
 
 export async function createBook(input) {
   await delay()
-  const rows = read(BOOKS_KEY, seed.books)
+  const rows = readBooks()
   const created = {
     rating: 0,
     notes: '',
@@ -50,63 +112,67 @@ export async function createBook(input) {
     id: nextId(rows),
     created_at: new Date().toISOString(),
   }
-  write(BOOKS_KEY, [...rows, created])
+  write(booksKey(), [...rows, created])
   return created
 }
 
 export async function updateBook(id, input) {
   await delay()
-  const rows = read(BOOKS_KEY, seed.books)
+  const rows = readBooks()
   const index = rows.findIndex((row) => row.id === Number(id))
   if (index === -1) throw new Error('Not found')
   rows[index] = { ...rows[index], ...input }
-  write(BOOKS_KEY, rows)
+  write(booksKey(), rows)
   return rows[index]
 }
 
 export async function deleteBook(id) {
   await delay()
-  write(BOOKS_KEY, read(BOOKS_KEY, seed.books).filter((row) => row.id !== Number(id)))
-  write(NOTES_KEY, read(NOTES_KEY, seed.notes).filter((row) => row.bookId !== Number(id)))
+  write(booksKey(), readBooks().filter((row) => row.id !== Number(id)))
+  write(notesKey(), readNotes().filter((row) => row.bookId !== Number(id)))
 }
 
 export async function listNotes() {
   await delay()
-  return read(NOTES_KEY, seed.notes)
+  return readNotes()
 }
 
 export async function createNote(input) {
   await delay()
-  const rows = read(NOTES_KEY, seed.notes)
+  const rows = readNotes()
   const created = { ...input, id: nextId(rows) }
-  write(NOTES_KEY, [...rows, created])
+  write(notesKey(), [...rows, created])
   return created
 }
 
 export async function updateNote(id, input) {
   await delay()
-  const rows = read(NOTES_KEY, seed.notes)
+  const rows = readNotes()
   const index = rows.findIndex((row) => row.id === Number(id))
   if (index === -1) throw new Error('Not found')
   rows[index] = { ...rows[index], ...input }
-  write(NOTES_KEY, rows)
+  write(notesKey(), rows)
   return rows[index]
 }
 
 export async function deleteNote(id) {
   await delay()
-  write(NOTES_KEY, read(NOTES_KEY, seed.notes).filter((row) => row.id !== Number(id)))
+  write(notesKey(), readNotes().filter((row) => row.id !== Number(id)))
 }
 
 export async function getProfile() {
   await delay()
-  return read(PROFILE_KEY, seed.profile)
+  const found = readUsers().find((u) => u.id === currentUserId())
+  return publicProfile(found)
 }
 
 export async function updateProfile(input) {
   await delay()
-  const current = read(PROFILE_KEY, seed.profile)
-  const updated = { ...current, ...input }
-  write(PROFILE_KEY, updated)
-  return updated
+  const users = readUsers()
+  const index = users.findIndex((u) => u.id === currentUserId())
+  const next = { ...users[index], ...input }
+  checkUsername(next.username, users, next.id)
+  users[index] = next
+  write(USERS_KEY, users)
+  return publicProfile(next)
 }

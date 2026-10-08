@@ -3,7 +3,7 @@ import Button from '../components/Button.jsx'
 import { STATUSES } from '../utils/statuses.js'
 import logo from '../assets/logo.svg'
 
-export default function Account({ profile, updateProfile, books }) {
+export default function Account({ profile, updateProfile, books, onLogout }) {
   const [editing, setEditing] = useState(false)
   const [bio, setBio] = useState(profile.bio)
   const [saving, setSaving] = useState(false)
@@ -58,6 +58,14 @@ export default function Account({ profile, updateProfile, books }) {
             {status.label}: {books.filter((b) => b.status === status.id).length}
           </p>
         ))}
+      </div>
+
+      <div className="panel">
+        <div className="actions">
+          <Button variant="secondary" onClick={onLogout}>
+            Log out
+          </Button>
+        </div>
       </div>
     </section>
   )
