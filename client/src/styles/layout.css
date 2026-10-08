@@ -26,11 +26,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  font-size: 3rem;
+  gap: clamp(8px, 2.5vw, 15px);
+  font-size: clamp(1.25rem, 6.5vw, 3rem);
 }
 .header__logo {
   flex: none;
+  width: clamp(52px, 16vw, 100px);
+  height: auto;
 }
 
 .shelf-row {
