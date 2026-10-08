@@ -4,7 +4,8 @@
 
 Booked Worm is a reading tracker. Users add the books they want to read and
 update each book's status (Want to read, Reading, Finished, Dropped) as they
-go, rate it, and write notes tied to a specific book. It's for anyone who
+go, rate it, and write notes tied to a specific book. Everyone signs up for
+their own account and gets their own private library. It's for anyone who
 reads several books at once and loses track of where they left off.
 
 - Live site: https://jeirld.github.io/BookedWorm/
@@ -53,10 +54,13 @@ the real backend too, copy `server/.env.example` to `server/.env` and set
 Every `VITE_` value is compiled into the built JavaScript and is **public**.
 Never put a key, a password, or a connection string in one.
 
-**Database setup and seeding.** The schema (`server/db/schema.sql`) and seed
-data (`server/db/seed.sql`) are loaded with `npm run db:reset` from `server/`,
-which needs `DATABASE_URL` set. The live site uses a hosted PostgreSQL
-database on Neon.
+**Database setup and seeding.** The schema (`server/db/schema.sql`) and a demo
+account with four sample books (`server/db/seed.js`) are loaded with
+`npm run db:reset` from `server/`, which needs `DATABASE_URL` set. The live site
+uses a hosted PostgreSQL database on Neon.
+
+**Demo account.** Username `bookworm`, password `readmore123`. Anyone can also
+sign up for their own account.
 
 ## 3. How to run it
 
@@ -74,6 +78,10 @@ the server in a second terminal with `cd server`, then `npm run dev` (it
 listens on port 3000), and set `VITE_USE_MOCK_API=false` in `client/.env`.
 
 ## 4. Features and usage
+
+Log in / Sign up - the first screen when you're signed out. Usernames are 3 to
+30 characters (letters, numbers, dots, dashes, underscores) and passwords need
+at least 8 characters. Each account only ever sees its own books and notes.
 
 Home - shows the four statuses as a list. Tapping one opens that shelf.
 
@@ -93,14 +101,18 @@ Notes - lists notes as cards. Tapping one asks whether you want to read or
 edit it, then opens the matching view. Delete is in the edit view, with a
 confirmation.
 
-Account - shows the username, join date, and a biography you can edit.
+Account - shows the username, join date, and a biography you can edit. Log out
+is at the bottom.
 
 **API.** The Express server in `server/server.js`
 implements the endpoints `client/src/api/httpApi.js` calls:
 
 | Method | Path | What it does |
 | --- | --- | --- |
-| GET | `/api/books` | list all books |
+| POST | `/api/auth/register` | create an account, returns a login token |
+| POST | `/api/auth/login` | log in, returns a login token |
+| POST | `/api/auth/logout` | end the current login |
+| GET | `/api/books` | list your books |
 | POST | `/api/books` | add a book |
 | PATCH | `/api/books/:id` | update a book (status, rating, etc.) |
 | DELETE | `/api/books/:id` | remove a book |
@@ -108,8 +120,11 @@ implements the endpoints `client/src/api/httpApi.js` calls:
 | POST | `/api/notes` | add a note |
 | PATCH | `/api/notes/:id` | update a note |
 | DELETE | `/api/notes/:id` | remove a note |
-| GET | `/api/profile` | get the single profile row |
-| PATCH | `/api/profile` | update the profile |
+| GET | `/api/profile` | get your profile |
+| PATCH | `/api/profile` | update your profile |
+
+Everything except register and login needs an `Authorization: Bearer <token>`
+header, and only returns or changes the signed-in user's own rows.
 
 ## 5. Project structure
 
@@ -122,8 +137,8 @@ client/
     pages/        one file per screen (Home, Shelf, BookDetails, ...)
     styles/       tokens.css, components.css (design system), layout.css
     utils/        small helpers (statuses, spine colours/heights)
-server/           Express + PostgreSQL: routes, repo files (SQL queries),
-                   and db/ (schema and seed data)
+server/           Express + PostgreSQL: routes, auth.js (passwords and
+                   logins), repo files (SQL queries), and db/ (schema, seed)
 docs/             planning documents and weekly reports
 ```
 
@@ -147,8 +162,8 @@ Book details:
   Render, and the database on Neon.
 - The free API host sleeps when idle, so the first load after a quiet
   spell is slow.
-- No login. The app assumes a single user for now; the profile table
-  is shaped so a real login can be added later without a rewrite.
+- Accounts are basic: no password reset, no email, and no way to change
+  a password yet. The login token is kept in the browser's local storage.
 - Next steps are the security checklist, finishing the docs, and any
   remaining polish.
 
