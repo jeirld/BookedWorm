@@ -1,6 +1,5 @@
 import Icon from './Icon.jsx'
 
-// Atom. Props: value (0-5), onChange. Read-only when onChange is omitted.
 export default function StarRating({ value = 0, onChange }) {
   const stars = [1, 2, 3, 4, 5]
   const readOnly = !onChange

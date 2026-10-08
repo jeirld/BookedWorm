@@ -2,8 +2,6 @@ import { NavLink } from 'react-router-dom'
 import Icon from './Icon.jsx'
 import styles from './BottomNav.module.css'
 
-// Organism. Props: active (kept for the design system's prop table;
-// NavLink already derives the active state from the current route).
 const ITEMS = [
   { to: '/', label: 'Home', icon: 'home' },
   { to: '/notes', label: 'Notes', icon: 'note' },

@@ -1,7 +1,5 @@
 import Icon from './Icon.jsx'
 
-// Molecule. Props: label, id, type, value, onChange, error, options
-// (options makes it render a <select>; type="textarea" renders a <textarea>).
 export default function FormField({ label, id, type = 'text', value, onChange, error, options }) {
   const describedBy = error ? `${id}-error` : undefined
 

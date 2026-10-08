@@ -2,9 +2,8 @@ import { useState } from 'react'
 import Button from './Button.jsx'
 import FormField from './FormField.jsx'
 
-
 export default function NoteDialogContent({ note, onSave, onDelete, onClose }) {
-  const [step, setStep] = useState('choice') // 'choice' | 'read' | 'edit'
+  const [step, setStep] = useState('choice')
   const [title, setTitle] = useState(note.title)
   const [body, setBody] = useState(note.body)
   const [saving, setSaving] = useState(false)
@@ -60,7 +59,6 @@ export default function NoteDialogContent({ note, onSave, onDelete, onClose }) {
     )
   }
 
-  // step === 'read'
   return (
     <>
       <h2>{title}</h2>

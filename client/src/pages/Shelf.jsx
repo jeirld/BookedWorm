@@ -5,16 +5,7 @@ import AddButton from '../components/AddButton.jsx'
 import Icon from '../components/Icon.jsx'
 import { getStatus } from '../utils/statuses.js'
 
-// A real shelf only fits so many books side by side. Once a status has
-// more than this many, the rest spill onto a new shelf row (its own
-// <ul className="shelf"> + plank) underneath, instead of squeezing
-// everything onto one row.
-//
-// 6, not 8: 6 original-size books (--tap-min wide + the 6px gap
-// components.css sets on .shelf) is 294px, which fits even on a
-// narrow 360px phone (~328px available after gutters). 8 would be
-// 394px -- too wide for that phone, needing a horizontal scroll every
-// time regardless of screen size.
+// 6 books fit on a 360px phone without horizontal scrolling; 8 don't.
 const SHELF_CAPACITY = 6
 
 function chunk(items, size) {
@@ -25,18 +16,12 @@ function chunk(items, size) {
   return rows
 }
 
-// One shelf row. Measures itself after render (and on resize) to know
-// whether its books actually overflow the fixed-width plank -- the
-// visible, tinted scrollbar (layout.css) only applies when they do, via
-// the `scrollable` class below. Without this check, a shelf with just
-// 1-2 books showed a full-width scrollbar with nothing to scroll: once
-// a browser's ::-webkit-scrollbar is custom-styled, it switches to
-// "classic" scrollbars that paint a full-track thumb even with zero
-// overflow, instead of just hiding like the native default does.
 function ShelfRow({ books, onOpen }) {
   const ref = useRef(null)
   const [scrollable, setScrollable] = useState(false)
 
+  // Only style the scrollbar when the row really overflows. Always styling it
+  // makes Chromium draw a full-width bar even with nothing to scroll.
   useEffect(() => {
     const el = ref.current
     if (!el) return

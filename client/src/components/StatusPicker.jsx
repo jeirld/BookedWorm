@@ -1,7 +1,6 @@
 import StatusTag from './StatusTag.jsx'
 import { STATUSES } from '../utils/statuses.js'
 
-// Molecule. A radio group of the four StatusTags. Props: value, onChange.
 export default function StatusPicker({ value, onChange }) {
   return (
     <div className="field">

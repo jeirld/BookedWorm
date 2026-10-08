@@ -4,15 +4,6 @@ import StarRating from '../components/StarRating.jsx'
 import StatusPicker from '../components/StatusPicker.jsx'
 import Button from '../components/Button.jsx'
 
-// Save updates the book and STAYS on this screen (per CLAUDE.md), so the
-// form fields are local state, seeded once from `book` when this component
-// mounts. BookDetails.jsx remounts it (via `key`) whenever a different
-// book is opened, so the fields always start from the right values.
-//
-// Field order matches the wireframe: title, star rating, blurb, status,
-// then author last. Content sits in a `panel` (see layout.css) so this
-// screen has the same lifted-card feel as Home and Notes, instead of
-// floating directly on the page background.
 export default function BookDetailsForm({ book, updateBook, deleteBook }) {
   const [status, setStatus] = useState(book.status)
   const [rating, setRating] = useState(book.rating)
@@ -34,7 +25,6 @@ export default function BookDetailsForm({ book, updateBook, deleteBook }) {
       await deleteBook(book.id)
     }
   }
-
 
   return (
     <section className="section">

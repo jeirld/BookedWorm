@@ -1,4 +1,3 @@
-// Atom. Props: variant, disabled, onClick, children (see CLAUDE.md components table).
 export default function Button({
   variant = 'primary',
   disabled = false,

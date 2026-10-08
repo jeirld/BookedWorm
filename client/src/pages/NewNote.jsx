@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import FormField from '../components/FormField.jsx'
 import Button from '../components/Button.jsx'
 
-// Single column, and Title -> Note text -> Book, per the wireframe
-// (both the mobile and desktop New note sketches use one column, not the
-// two-column split Add book uses).
 export default function NewNote({ books, addNote }) {
   const navigate = useNavigate()
   const [title, setTitle] = useState('')

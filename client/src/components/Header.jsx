@@ -2,8 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import Icon from './Icon.jsx'
 import logo from '../assets/logo.svg'
 
-// Organism. Props: title, onBack. When onBack is omitted, the back
-// button is left out (Home has no back button, for example).
 export default function Header({ title, onBack }) {
   const navigate = useNavigate()
 
@@ -17,8 +15,6 @@ export default function Header({ title, onBack }) {
         </button>
       )}
       <h1 className="header__title">
-        {/* Decorative: the title text right next to it already says
-            "Booked Worm", so the logo isn't announced a second time. */}
         <img src={logo} alt="" width="100" height="100" className="header__logo" />
         {title}
       </h1>

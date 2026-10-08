@@ -11,16 +11,8 @@ import NewNote from './pages/NewNote.jsx'
 import Account from './pages/Account.jsx'
 import * as api from './api/index.js'
 
-// The three tabs BottomNav links to. Header has no back button on
-// these (there's nowhere sensible to go "back" from a tab), but every
-// other screen (Shelf, Book details, Add book, New note) is reached by
-// drilling in from one of these, so it gets one.
 const ROOT_ROUTES = ['/', '/notes', '/account']
 
-// Shared layout: Header, then the page (<Outlet>), then BottomNav.
-// Each page tells the layout its title via the route's `handle`, but for
-// Increment 1 we keep it simple and let each page render its own <h1>
-// inside <main>; Header stays generic here.
 function Layout() {
   const location = useLocation()
   const isRootScreen = ROOT_ROUTES.includes(location.pathname)
@@ -28,9 +20,6 @@ function Layout() {
   return (
     <>
       <Header title="Booked Worm" onBack={isRootScreen ? null : undefined} />
-      {/* BottomNav is fixed to the viewport (see BottomNav.module.css),
-          so main needs its own clearance at the bottom -- otherwise the
-          nav bar would sit on top of the last bit of content. */}
       <main className="page" style={{ paddingBottom: 'calc(var(--nav-height) + var(--space-4) + env(safe-area-inset-bottom))' }}>
         <Outlet />
       </main>
@@ -39,11 +28,6 @@ function Layout() {
   )
 }
 
-// Shown in place of the real routes while the first load is in flight
-// (src/api's mock implementation adds an artificial 250ms delay for
-// exactly this reason -- a real network is never instant, so this
-// screen has to exist rather than being discovered later against a
-// real API).
 function LoadingScreen() {
   return (
     <section className="section">
@@ -55,14 +39,7 @@ function LoadingScreen() {
 }
 
 export default function App() {
-  // Both books and notes live here, at the top of the tree, and get
-  // passed down as props. This is the fix for the proposal's one risk:
-  // updateBook always replaces the matching book with the server's
-  // response inside a NEW array (via .map), so React sees the change
-  // and re-renders correctly no matter which screen (Book details'
-  // Save, or the star rating) called it.
-  //
-  // null (not []) means "hasn't loaded yet" -- see LoadingScreen above.
+  // null means "not loaded yet", as opposed to an empty list.
   const [books, setBooks] = useState(null)
   const [notes, setNotes] = useState(null)
   const [profile, setProfile] = useState(null)

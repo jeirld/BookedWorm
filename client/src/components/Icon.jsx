@@ -1,9 +1,3 @@
-// A small hand-built icon set, since no icon sprite came with the design
-// system files. Stroke style matches components.css's `svg.icon` rule
-// (1.75 stroke width, round caps, no fill by default).
-//
-// Add new names here as pages need them. Each book status also has its
-// own icon name in utils/statuses.js — keep the two lists in sync.
 const PATHS = {
   bookmark: 'M6 3h12v18l-6-4-6 4V3Z',
   'book-open': 'M4 5v14c3-1.5 5-1.5 8 0V5c-3-1.5-5-1.5-8 0Zm16 0v14c-3-1.5-5-1.5-8 0V5c3-1.5 5-1.5 8 0Z',

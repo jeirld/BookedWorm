@@ -1,25 +1,9 @@
-// The simulated backend.
-//
-// Same function names, same return types, and the same shape of failure as
-// httpApi.js, so your components cannot tell the difference. Data lives in
-// the visitor's own browser and goes no further.
-//
-// This exists so the template's GitHub Pages link works on day one and so
-// you can build the interface before your API is deployed. It is NOT a
-// finished project.
-//
-// Three resources instead of the template's one: books, notes and a single
-// profile row (see CLAUDE.md -- no login yet, so there's exactly one).
-
 import seed from './seed.json'
 
 const BOOKS_KEY = 'bookedworm:books'
 const NOTES_KEY = 'bookedworm:notes'
 const PROFILE_KEY = 'bookedworm:profile'
 
-// A real network is not instant. Keeping this delay is what forces building
-// a loading state now, while it is cheap, instead of discovering the need
-// for one the day this switches to the real API.
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function read(key, fallback) {
@@ -28,7 +12,6 @@ function read(key, fallback) {
     try {
       return JSON.parse(stored)
     } catch {
-      // Corrupted storage. Start again rather than crashing the app.
       localStorage.removeItem(key)
     }
   }
@@ -44,8 +27,6 @@ function write(key, value) {
 function nextId(rows) {
   return rows.length ? Math.max(...rows.map((r) => r.id)) + 1 : 1
 }
-
-// ---- Books ------------------------------------------------------------
 
 export async function listBooks() {
   await delay()
@@ -89,8 +70,6 @@ export async function deleteBook(id) {
   write(NOTES_KEY, read(NOTES_KEY, seed.notes).filter((row) => row.bookId !== Number(id)))
 }
 
-// ---- Notes --------------------------------------------------------------
-
 export async function listNotes() {
   await delay()
   return read(NOTES_KEY, seed.notes)
@@ -118,8 +97,6 @@ export async function deleteNote(id) {
   await delay()
   write(NOTES_KEY, read(NOTES_KEY, seed.notes).filter((row) => row.id !== Number(id)))
 }
-
-// ---- Profile (a single row, no login yet) --------------------------------
 
 export async function getProfile() {
   await delay()

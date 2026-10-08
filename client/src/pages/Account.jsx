@@ -3,10 +3,6 @@ import Button from '../components/Button.jsx'
 import { STATUSES } from '../utils/statuses.js'
 import logo from '../assets/logo.svg'
 
-// Field order matches the wireframe: username, date of creation,
-// biography (with its Edit button), then the app logo. Content sits in
-// a `panel` (see layout.css) for the same lifted-card feel as the rest
-// of the app.
 export default function Account({ profile, updateProfile, books }) {
   const [editing, setEditing] = useState(false)
   const [bio, setBio] = useState(profile.bio)

@@ -82,8 +82,6 @@ function validateProfile(body, defaults) {
   return { errors, value: { username, bio } }
 }
 
-// ---- Books ------------------------------------------------------------
-
 app.get('/api/books', async (request, response, next) => {
   try {
     response.json(await books.getAll(pool))
@@ -138,8 +136,6 @@ app.delete('/api/books/:id', async (request, response, next) => {
   }
 })
 
-// ---- Notes --------------------------------------------------------------
-
 app.get('/api/notes', async (request, response, next) => {
   try {
     response.json(await notes.getAll(pool))
@@ -185,8 +181,6 @@ app.delete('/api/notes/:id', async (request, response, next) => {
     next(error)
   }
 })
-
-// ---- Profile (a single row, no login yet) --------------------------------
 
 app.get('/api/profile', async (request, response, next) => {
   try {

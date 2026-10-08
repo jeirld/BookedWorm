@@ -25,7 +25,6 @@ export default function AddBook({ addBook }) {
 
     setSaving(true)
     await addBook({ title, author, blurb, status, rating })
-    // Goes to the shelf matching the chosen status, per CLAUDE.md.
     navigate(`/shelf/${status}`)
   }
 

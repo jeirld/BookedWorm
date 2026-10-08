@@ -1,32 +1,12 @@
-/* ==========================================================================
-   Small layout additions on top of the design system's tokens.css and
-   components.css. Nothing here introduces a new colour or font --
-   components.css defines *between*-section spacing (.section + .section)
-   but not spacing between a section's own children, so several pages
-   (Book details, Add book, Account) had zero gap between elements
-   stacked directly inside one <section>. This adds that missing rhythm.
-   ========================================================================== */
-
 .section > * + *,
 .panel > * + * {
   margin-top: var(--space-3);
 }
 
-/* Same rhythm inside a form-grid column (AddBook's two <div> columns),
-   where several FormFields were otherwise touching with no gap. */
 .col > * + * {
   margin-top: var(--space-2);
 }
 
-/* ---- Panel: a surface "card" wrapper for a page's main content --------
-   Book details, Add book, New note and Account used to sit as raw text
-   directly on the page background. Wrapping them in a panel gives every
-   screen the same physical, lifted-card feel Home and Notes already had
-   from StatusCard/NoteCard, instead of some screens floating on black
-   and others sitting on a surface. Colour is still --color-surface from
-   tokens.css; the shadow is tinted toward the page background instead of
-   a generic black drop shadow, and the inset line is a sliver of the
-   parchment text colour for a soft top highlight (not a new colour). */
 .panel {
   background: var(--color-surface);
   border-radius: var(--radius-md);
@@ -36,89 +16,39 @@
     inset 0 1px 0 rgba(232, 218, 194, 0.06);
 }
 
-/* NoteCard already uses --color-surface (components.css); this adds the
-   same tinted depth without changing anything components.css declares. */
 .note-card {
   box-shadow:
     0 6px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(232, 218, 194, 0.05);
 }
 
-/* Header.jsx puts the brand logo next to the title, as one centered
-   group. components.css centers .header__title with text-align, which
-   still works, but it's a block by default -- this makes it a flex row
-   so the logo and text sit on one line with real breathing room
-   between them (gap), instead of touching. */
 .header__title {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
-  font-size: 3rem; /* change this to resize just the header title --
-    kept modest here because 120px logo + 3.5rem text didn't fit on a
-    phone screen and got cut off. Nudge this up gradually and check the
-    live preview at each step. */
+  font-size: 3rem;
 }
 .header__logo {
   flex: none;
 }
 
-/* Book spines on a shelf (see pages/Shelf.jsx) keep their original
-   fixed size (components.css: --tap-min wide, 120-176px tall). A shelf
-   is a fixed physical object -- it doesn't get longer or shorter as
-   books are added or removed, it's just emptier or fuller. So instead
-   of sizing the plank to however many books happen to be on it right
-   now, this sizes it once, for the full SHELF_CAPACITY (6, Shelf.jsx:
-   6 * --tap-min + 5 gaps of the 6px components.css sets on .shelf),
-   and centers it with margin-inline: auto. 6 was chosen specifically
-   so this fits without scrolling even on a narrow 360px phone; max-
-   width plus .shelf's overflow-x below is just a safety net for
-   anything narrower than that. */
 .shelf-row {
-  /* +16px: a real plank overhangs the books resting on it a little on
-     each side, rather than ending exactly flush with the last spine.
-     Still comfortably under the ~328px available on a 360px phone. */
   width: calc(6 * var(--tap-min) + 5 * 6px + 16px);
   max-width: 100%;
   margin-inline: auto;
 }
-/* The Shelf page's heading ("Want to read", "Reading", ...) centered
-   to match the centered shelf below it, instead of the left-aligned
-   default components.css gives every h1/h2/h3. */
 .shelf-heading {
   text-align: center;
 }
-/* components.css gives .shelf its own left/right padding (var(--space-2),
-   16px each side) -- left over from when the plank spanned the full
-   page width and needed inset from the edges. Now that the shelf-row
-   wrapping it is already a tightly-sized, centered box, that padding
-   just eats into the 6-book budget above for no reason (it was making
-   a 6-book row overflow by 32px). Zeroing it here is the one place
-   this file overrides an existing components.css declaration instead
-   of only adding new ones -- everything else in this file is additive. */
 .shelf {
-  /* 8px each side instead of components.css's 16px -- matches the
-     shelf-row's +16px overhang above exactly, so a FULL row of 6 books
-     sits flush against this padding on both sides (true overhang).
-     A row with fewer books just starts at the left padding and leaves
-     natural empty shelf space after it, the way a partly-filled shelf
-     actually looks -- not centered in the middle of a mostly-empty
-     plank, which is what `justify-content: center` did here before. */
   padding-inline: 8px;
   overflow-x: auto;
 }
-/* A visible, tinted scrollbar -- but ONLY on rows that actually need
-   it (Shelf.jsx's ShelfRow measures scrollWidth vs clientWidth and
-   adds this class). Styling ::-webkit-scrollbar unconditionally on
-   every .shelf switches Chromium to "classic" scrollbars that paint a
-   full-width thumb even with nothing to scroll, instead of hiding like
-   the native default -- that showed up as a mystery bar under every
-   shelf, even ones with just 1 book. Scoping it to .shelf--scrollable
-   keeps shelves that fit looking plain, with no scrollbar at all. */
 .shelf--scrollable {
   scrollbar-width: thin;
   scrollbar-color: var(--color-primary) transparent;
-  padding-bottom: var(--space-2); /* room for the scrollbar so it doesn't sit on the spines */
+  padding-bottom: var(--space-2);
 }
 .shelf--scrollable::-webkit-scrollbar {
   height: 8px;
