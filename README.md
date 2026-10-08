@@ -7,11 +7,18 @@ update each book's status (Want to read, Reading, Finished, Dropped) as they
 go, rate it, and write notes tied to a specific book. It's for anyone who
 reads several books at once and loses track of where they left off.
 
+- Live site: https://jeirld.github.io/BookedWorm/
+- API health check: https://bookedworm.onrender.com/healthz
+- Code: https://github.com/jeirld/BookedWorm
+
+The API runs on Render's free tier, which sleeps when idle. The first request
+after a quiet spell can take up to a minute while it wakes up.
+
 ## 2. Setup and installation
 
 **Install first:** [Node.js](https://nodejs.org/) 18 or newer, and `npm`
-(comes with Node). PostgreSQL 16 or newer will be needed once the real
-backend is built, either local or hosted.
+(comes with Node). PostgreSQL 16 or newer is only needed if you want to run
+the real backend yourself, either local or hosted.
 
 **Get the code:**
 
@@ -20,32 +27,36 @@ git clone https://github.com/jeirld/BookedWorm.git
 cd BookedWorm
 ```
 
-**Install dependencies (client only, for now):**
+**Install dependencies:**
 
 ```bash
 cd client
 npm install
+cd ../server
+npm install
 ```
 
 **Environment and configuration.** Copy `client/.env.example` to
-`client/.env`. Nothing needs to change to run it as it is right now.
+`client/.env`. Nothing needs to change to run the client on its own. To run
+the real backend too, copy `server/.env.example` to `server/.env` and set
+`DATABASE_URL`.
 
 | Name | Where | What it is |
 | --- | --- | --- |
 | `VITE_USE_MOCK_API` | client, build time | only the exact value `false` turns the simulated backend off; unset or `true` means it's on |
 | `VITE_API_BASE_URL` | client, build time | the real API's URL, once it exists. No trailing slash |
-| `DATABASE_URL` | server (not wired up yet) | PostgreSQL connection string |
-| `CORS_ORIGINS` | server (not wired up yet) | comma-separated origins allowed to call the API |
-| `NODE_ENV` | server (not wired up yet) | `production` on a real host |
-| `PORT` | server (not wired up yet) | set by the host, not by hand |
+| `DATABASE_URL` | server | PostgreSQL connection string |
+| `CORS_ORIGINS` | server | comma-separated origins allowed to call the API |
+| `NODE_ENV` | server | `production` on a real host |
+| `PORT` | server | set by the host, not by hand |
 
 Every `VITE_` value is compiled into the built JavaScript and is **public**.
 Never put a key, a password, or a connection string in one.
 
 **Database setup and seeding.** The schema (`server/db/schema.sql`) and seed
-data (`server/db/seed.sql`) already exist and can be set up locally with
-`npm run db:reset` from `server/`. The Express API hasn't been rebuilt to use
-them yet, so for now the client still runs on the mock API described above.
+data (`server/db/seed.sql`) are loaded with `npm run db:reset` from `server/`,
+which needs `DATABASE_URL` set. The live site uses a hosted PostgreSQL
+database on Neon.
 
 ## 3. How to run it
 
@@ -57,6 +68,10 @@ npm run dev
 
 Open **http://localhost:5173**. The first thing you should see is the Home
 screen: four rows, one per status, each showing a book count.
+
+That runs on the mock API (browser storage). To use the real API locally, start
+the server in a second terminal with `cd server`, then `npm run dev` (it
+listens on port 3000), and set `VITE_USE_MOCK_API=false` in `client/.env`.
 
 ## 4. Features and usage
 
@@ -80,7 +95,7 @@ confirmation.
 
 Account - shows the username, join date, and a biography you can edit.
 
-**API (written, not deployed yet).** The Express server in `server/server.js`
+**API.** The Express server in `server/server.js`
 implements the endpoints `client/src/api/httpApi.js` calls:
 
 | Method | Path | What it does |
@@ -107,8 +122,8 @@ client/
     pages/        one file per screen (Home, Shelf, BookDetails, ...)
     styles/       tokens.css, components.css (design system), layout.css
     utils/        small helpers (statuses, spine colours/heights)
-server/           Express + PostgreSQL. Schema for books/notes/profile
-                   is done, routes are still being rebuilt
+server/           Express + PostgreSQL: routes, repo files (SQL queries),
+                   and db/ (schema and seed data)
 docs/             planning documents and weekly reports
 ```
 
@@ -128,14 +143,14 @@ Book details:
 
 ## 7. Known issues and next steps
 
-- The API and database schema are done and tested against a real
-  PostgreSQL database, but only run locally so far.
-- Nothing is deployed. The GitHub Pages workflow is set up but hasn't
-  been triggered, and there's no API or database host yet.
+- All three pieces are deployed: the client on GitHub Pages, the API on
+  Render, and the database on Neon.
+- The free API host sleeps when idle, so the first load after a quiet
+  spell is slow.
 - No login. The app assumes a single user for now; the profile table
   is shaped so a real login can be added later without a rewrite.
-- for my next steps I will deploy all three pieces (client, API, database),
-  point the live site at the real API, then do any remaining polish.
+- Next steps are the security checklist, finishing the docs, and any
+  remaining polish.
 
 ## AI use
 
