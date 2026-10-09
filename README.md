@@ -139,7 +139,8 @@ client/
     utils/        small helpers (statuses, spine colours/heights)
 server/           Express + PostgreSQL: routes, auth.js (passwords and
                    logins), repo files (SQL queries), and db/ (schema, seed)
-docs/             planning documents and weekly reports
+docs/             proposal, mockup, design system, demo video plan,
+                   security notes, and weekly reports
 ```
 
 ## 6. Screenshots
@@ -156,6 +157,8 @@ Book details:
 
 ![Book details screen with star rating and status picker](docs/assets/screenshot-book-details.png)
 
+Every screen, including the empty states, is in [docs/02-mockup.md](docs/02-mockup.md).
+
 ## 7. Known issues and next steps
 
 - All three pieces are deployed: the client on GitHub Pages, the API on
@@ -164,8 +167,11 @@ Book details:
   spell is slow.
 - Accounts are basic: no password reset, no email, and no way to change
   a password yet. The login token is kept in the browser's local storage.
-- Next steps are the security checklist, finishing the docs, and any
-  remaining polish.
+- The security checklist is done ([SECURITY-CHECKLIST.md](SECURITY-CHECKLIST.md)):
+  the API uses `helmet`, rate limits login and signup, and `npm audit`
+  reports no vulnerabilities.
+- Next steps: password reset and change, a delete-account button, and search
+  and sort on the shelves.
 
 ## AI use
 
