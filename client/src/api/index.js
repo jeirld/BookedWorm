@@ -15,10 +15,13 @@ export const {
   createBook,
   updateBook,
   deleteBook,
+  searchBooks,
+  getStats,
   listNotes,
   createNote,
   updateNote,
   deleteNote,
   getProfile,
   updateProfile,
+  deleteAccount,
 } = implementation

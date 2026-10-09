@@ -142,6 +142,11 @@ export default function App() {
     setNotes((prev) => prev.filter((note) => note.id !== id))
   }
 
+  async function deleteAccount(password) {
+    await api.deleteAccount(password)
+    clearSession()
+  }
+
   async function updateProfile(changes) {
     const updated = await api.updateProfile(changes)
     setProfile(updated)
@@ -182,7 +187,7 @@ export default function App() {
             <Route path="/notes/new" element={<NewNote books={books} addNote={addNote} />} />
             <Route
               path="/account"
-              element={<Account profile={profile} updateProfile={updateProfile} books={books} onLogout={logout} />}
+              element={<Account profile={profile} updateProfile={updateProfile} onLogout={logout} onDeleteAccount={deleteAccount} />}
             />
           </>
         )}

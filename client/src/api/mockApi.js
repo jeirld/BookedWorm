@@ -132,6 +132,21 @@ export async function deleteBook(id) {
   write(notesKey(), readNotes().filter((row) => row.bookId !== Number(id)))
 }
 
+export async function searchBooks(term) {
+  await delay()
+  const text = term.trim().toLowerCase()
+  return readBooks().filter(
+    (book) => book.title.toLowerCase().includes(text) || book.author.toLowerCase().includes(text)
+  )
+}
+
+export async function getStats() {
+  await delay()
+  const counts = { 'want-to-read': 0, reading: 0, finished: 0, dropped: 0 }
+  for (const book of readBooks()) counts[book.status] += 1
+  return counts
+}
+
 export async function listNotes() {
   await delay()
   return readNotes()
@@ -175,4 +190,17 @@ export async function updateProfile(input) {
   users[index] = next
   write(USERS_KEY, users)
   return publicProfile(next)
+}
+
+export async function deleteAccount(password) {
+  await delay()
+  const id = currentUserId()
+  const users = readUsers()
+  const found = users.find((u) => u.id === id)
+  if (found.id === DEMO_USER.id) throw new Error('The demo account cannot be deleted')
+  if (found.password !== password) throw new Error('Wrong password')
+  write(USERS_KEY, users.filter((u) => u.id !== id))
+  localStorage.removeItem(booksKey())
+  localStorage.removeItem(notesKey())
+  localStorage.removeItem(SESSION_KEY)
 }

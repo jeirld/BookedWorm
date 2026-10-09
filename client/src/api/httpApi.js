@@ -80,6 +80,10 @@ export const updateBook = (id, input) =>
 
 export const deleteBook = (id) => request(`/api/books/${id}`, { method: 'DELETE' })
 
+export const searchBooks = (term) => request(`/api/books?search=${encodeURIComponent(term)}`)
+
+export const getStats = () => request('/api/stats')
+
 export const listNotes = () => request('/api/notes')
 
 export const createNote = (input) =>
@@ -94,3 +98,8 @@ export const getProfile = () => request('/api/profile')
 
 export const updateProfile = (input) =>
   request('/api/profile', { method: 'PATCH', body: JSON.stringify(input) })
+
+export async function deleteAccount(password) {
+  await request('/api/profile', { method: 'DELETE', body: JSON.stringify({ password }) })
+  setToken(null)
+}
