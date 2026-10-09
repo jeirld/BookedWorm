@@ -1,4 +1,5 @@
 export async function create(pool, tokenHash, profileId, expiresAt) {
+  await pool.query('DELETE FROM sessions WHERE expires_at < now()')
   await pool.query(
     'INSERT INTO sessions (token_hash, profile_id, expires_at) VALUES ($1, $2, $3)',
     [tokenHash, profileId, expiresAt]

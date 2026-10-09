@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import { pool } from './db/pool.js'
 import * as books from './booksRepo.js'
 import * as notes from './notesRepo.js'
@@ -14,6 +15,7 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .map((origin) => origin.trim())
   .filter(Boolean)
 
+app.use(helmet())
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({ limit: '100kb' }))
 
@@ -31,6 +33,8 @@ app.get('/readyz', async (request, response) => {
   }
 })
 
+const MAX_ID = 2147483647
+
 const attempts = new Map()
 const WINDOW_MS = 15 * 60 * 1000
 const MAX_ATTEMPTS = 20
@@ -39,6 +43,9 @@ function limitAuthAttempts(request, response, next) {
   const now = Date.now()
   const entry = attempts.get(request.ip)
   if (!entry || now - entry.start > WINDOW_MS) {
+    for (const [ip, old] of attempts) {
+      if (now - old.start > WINDOW_MS) attempts.delete(ip)
+    }
     attempts.set(request.ip, { start: now, count: 1 })
     return next()
   }
@@ -50,7 +57,7 @@ function limitAuthAttempts(request, response, next) {
 }
 
 app.param('id', (request, response, next, id) => {
-  if (!/^\d+$/.test(id)) return response.status(404).json({ error: 'Not found' })
+  if (!/^\d+$/.test(id) || Number(id) > MAX_ID) return response.status(404).json({ error: 'Not found' })
   next()
 })
 
@@ -101,7 +108,7 @@ function validateNote(body, defaults) {
   const noteBody = typeof body.body === 'string' ? body.body.trim() : defaults.body
   const date = typeof body.date === 'string' && body.date ? body.date : defaults.date
 
-  if (!Number.isInteger(bookId)) errors.push('bookId is required')
+  if (!Number.isInteger(bookId) || bookId < 1 || bookId > MAX_ID) errors.push('bookId is required')
   if (!title) errors.push('title is required')
   if (title.length > 200) errors.push('title must be 200 characters or fewer')
   if (noteBody.length > 5000) errors.push('body must be 5000 characters or fewer')
@@ -142,7 +149,7 @@ app.post('/api/auth/register', limitAuthAttempts, async (request, response, next
 
 app.post('/api/auth/login', limitAuthAttempts, async (request, response, next) => {
   const username = typeof request.body?.username === 'string' ? request.body.username.trim() : ''
-  const password = typeof request.body?.password === 'string' ? request.body.password : ''
+  const password = typeof request.body?.password === 'string' ? request.body.password.slice(0, 100) : ''
 
   try {
     const account = await profile.getLoginByUsername(pool, username)
@@ -303,6 +310,8 @@ app.use((request, response) => {
 })
 
 app.use((error, request, response, next) => {
+  if (error.type === 'entity.parse.failed') return response.status(400).json({ error: 'Request body is not valid JSON' })
+  if (error.type === 'entity.too.large') return response.status(413).json({ error: 'Request body is too large' })
   console.error(error)
   response.status(500).json({ error: 'Something went wrong on the server' })
 })
