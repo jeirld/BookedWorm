@@ -34,6 +34,7 @@ app.get('/readyz', async (request, response) => {
 })
 
 const MAX_ID = 2147483647
+const DEMO_USERNAME = 'bookworm'
 
 const attempts = new Map()
 const WINDOW_MS = 15 * 60 * 1000
@@ -175,10 +176,14 @@ app.post('/api/auth/logout', requireAuth, async (request, response, next) => {
 app.use('/api/books', requireAuth)
 app.use('/api/notes', requireAuth)
 app.use('/api/profile', requireAuth)
+app.use('/api/stats', requireAuth)
 
 app.get('/api/books', async (request, response, next) => {
+  const term = typeof request.query.search === 'string' ? request.query.search.trim() : ''
+  if (term.length > 100) return response.status(400).json({ error: 'search must be 100 characters or fewer' })
+
   try {
-    response.json(await books.getAll(pool, request.profileId))
+    response.json(term ? await books.search(pool, request.profileId, term) : await books.getAll(pool, request.profileId))
   } catch (error) {
     next(error)
   }
@@ -225,6 +230,16 @@ app.delete('/api/books/:id', async (request, response, next) => {
     const removed = await books.remove(pool, request.profileId, request.params.id)
     if (!removed) return response.status(404).json({ error: 'Not found' })
     response.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.get('/api/stats', async (request, response, next) => {
+  try {
+    const counts = Object.fromEntries(STATUSES.map((status) => [status, 0]))
+    for (const row of await books.countByStatus(pool, request.profileId)) counts[row.status] = row.count
+    response.json(counts)
   } catch (error) {
     next(error)
   }
@@ -297,10 +312,35 @@ app.patch('/api/profile', async (request, response, next) => {
 
     const { errors, value } = validateProfile(request.body ?? {}, current)
     if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+    if (current.username.toLowerCase() === DEMO_USERNAME && value.username !== current.username) {
+      return response.status(403).json({ error: 'The demo account cannot be renamed' })
+    }
 
     response.json(await profile.update(pool, request.profileId, value))
   } catch (error) {
     if (error.code === '23505') return response.status(409).json({ error: 'That username is already taken' })
+    next(error)
+  }
+})
+
+app.delete('/api/profile', limitAuthAttempts, async (request, response, next) => {
+  const password = typeof request.body?.password === 'string' ? request.body.password.slice(0, 100) : ''
+
+  try {
+    const current = await profile.getById(pool, request.profileId)
+    if (!current) return response.status(404).json({ error: 'Not found' })
+    if (current.username.toLowerCase() === DEMO_USERNAME) {
+      return response.status(403).json({ error: 'The demo account cannot be deleted' })
+    }
+
+    const account = await profile.getLoginByUsername(pool, current.username)
+    if (!checkLogin(password, account?.passwordHash)) {
+      return response.status(403).json({ error: 'Wrong password' })
+    }
+
+    await profile.remove(pool, request.profileId)
+    response.status(204).end()
+  } catch (error) {
     next(error)
   }
 })
