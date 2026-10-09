@@ -6,6 +6,28 @@ export async function getAll(pool, profileId) {
   return result.rows
 }
 
+export async function search(pool, profileId, term) {
+  const result = await pool.query(
+    `SELECT * FROM books
+     WHERE profile_id = $1
+       AND (title ILIKE $2 OR author ILIKE $2)
+     ORDER BY created_at DESC`,
+    [profileId, `%${term}%`]
+  )
+  return result.rows
+}
+
+export async function countByStatus(pool, profileId) {
+  const result = await pool.query(
+    `SELECT status, COUNT(*)::int AS count
+     FROM books
+     WHERE profile_id = $1
+     GROUP BY status`,
+    [profileId]
+  )
+  return result.rows
+}
+
 export async function getById(pool, profileId, id) {
   const result = await pool.query('SELECT * FROM books WHERE id = $1 AND profile_id = $2', [id, profileId])
   return result.rows[0] ?? null

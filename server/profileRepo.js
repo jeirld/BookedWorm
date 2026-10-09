@@ -32,3 +32,11 @@ export async function update(pool, id, changes) {
   )
   return result.rows[0]
 }
+
+export async function remove(pool, id) {
+  const result = await pool.query(
+    'DELETE FROM profile WHERE id = $1 RETURNING id',
+    [id]
+  )
+  return result.rowCount > 0
+}
