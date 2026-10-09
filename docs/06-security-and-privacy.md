@@ -24,5 +24,6 @@ The full row-by-row checklist is [SECURITY-CHECKLIST.md](../SECURITY-CHECKLIST.m
 Storing other people's passwords. They are only kept as salted hashes, and the
 amount of personal data is kept to a username and a bio. Knowingly accepted: the
 login token is kept in the browser's `localStorage`, and there is no password
-reset or delete-account button. Fixing those properly needs cookies or an email
-service, which was out of scope.
+reset. Fixing those properly needs cookies or an email service, which was out of
+scope. Deleting an account asks for the password again, and the public demo
+account cannot be deleted or renamed.

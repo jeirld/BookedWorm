@@ -22,7 +22,8 @@ they left off.
 | Browse by status: Home lists the four statuses, Shelf shows the books as spines | Done |
 | Book details: change rating and status, save, delete | Done |
 | Notes tied to a book: add, read, edit, delete | Done |
-| Account page with a biography | Done |
+| Account page with a biography, a count per status, and delete account (asks for the password) | Done |
+| Search books by title or author from Home | Done |
 | Data saved in a real PostgreSQL database through an Express API | Done |
 | Accounts: sign up, log in, log out, a private library per person | Done (added in October, see below) |
 
@@ -34,12 +35,14 @@ they left off.
   now has their own account. Passwords are hashed and every query is scoped to the
   signed-in person. See [06-security-and-privacy.md](06-security-and-privacy.md).
 - **Delete** for books and notes was a late addition (2026-10-07).
+- **Search and delete account** were stretch goals and were built on 2026-10-09.
 - **Dropped from the original plan:** nothing was cut.
 
 ## Stretch goals (not built)
 
-- Change or reset a password, and a delete-my-account button
-- Search and sort on the shelves
+- Change or reset a password
+- Sort on the shelves
+- Automated tests for the API
 - Reading progress (page or percent) on a book
 - Importing a list of books
 

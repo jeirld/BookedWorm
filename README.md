@@ -83,7 +83,8 @@ Log in / Sign up - the first screen when you're signed out. Usernames are 3 to
 30 characters (letters, numbers, dots, dashes, underscores) and passwords need
 at least 8 characters. Each account only ever sees its own books and notes.
 
-Home - shows the four statuses as a list. Tapping one opens that shelf.
+Home - shows the four statuses as a list. Tapping one opens that shelf. The
+search box at the top finds books by title or author across all statuses.
 
 Shelf - shows the books in that status as spines on a shelf. Tap a book to
 open it, or use the Add book button.
@@ -101,8 +102,10 @@ Notes - lists notes as cards. Tapping one asks whether you want to read or
 edit it, then opens the matching view. Delete is in the edit view, with a
 confirmation.
 
-Account - shows the username, join date, and a biography you can edit. Log out
-is at the bottom.
+Account - shows the username, join date, a biography you can edit, and how many
+books you have in each status. Log out is at the bottom, next to Delete account,
+which asks for your password and then removes your account, books and notes for
+good. The public demo account cannot be deleted.
 
 **API.** The Express server in `server/server.js`
 implements the endpoints `client/src/api/httpApi.js` calls:
@@ -112,7 +115,8 @@ implements the endpoints `client/src/api/httpApi.js` calls:
 | POST | `/api/auth/register` | create an account, returns a login token |
 | POST | `/api/auth/login` | log in, returns a login token |
 | POST | `/api/auth/logout` | end the current login |
-| GET | `/api/books` | list your books |
+| GET | `/api/books` | list your books; add `?search=text` to filter by title or author |
+| GET | `/api/stats` | how many of your books are in each status |
 | POST | `/api/books` | add a book |
 | PATCH | `/api/books/:id` | update a book (status, rating, etc.) |
 | DELETE | `/api/books/:id` | remove a book |
@@ -122,6 +126,7 @@ implements the endpoints `client/src/api/httpApi.js` calls:
 | DELETE | `/api/notes/:id` | remove a note |
 | GET | `/api/profile` | get your profile |
 | PATCH | `/api/profile` | update your profile |
+| DELETE | `/api/profile` | delete your account (needs your password) |
 
 Everything except register and login needs an `Authorization: Bearer <token>`
 header, and only returns or changes the signed-in user's own rows.
@@ -166,12 +171,12 @@ Every screen, including the empty states, is in [docs/02-mockup.md](docs/02-mock
 - The free API host sleeps when idle, so the first load after a quiet
   spell is slow.
 - Accounts are basic: no password reset, no email, and no way to change
-  a password yet. The login token is kept in the browser's local storage.
+  a password yet. You can delete your account. The login token is kept in the browser's local storage.
 - The security checklist is done ([SECURITY-CHECKLIST.md](SECURITY-CHECKLIST.md)):
   the API uses `helmet`, rate limits login and signup, and `npm audit`
   reports no vulnerabilities.
-- Next steps: password reset and change, a delete-account button, and search
-  and sort on the shelves.
+- Next steps: password reset and change, automated tests for the API, and
+  sort on the shelves.
 
 ## AI use
 
